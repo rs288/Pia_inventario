@@ -1,7 +1,7 @@
 ﻿// src/components/Sidebar.js
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import './Sidebar2.css';
+import './Sidebar.css';
 
 const Sidebar = () => {
     const location = useLocation(); // Obtiene la ubicación actual

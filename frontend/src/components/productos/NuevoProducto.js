@@ -1,7 +1,7 @@
 /// NuevoProducto.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
-import './FormularioNuevoProducto.css';
+import './NuevoProducto.css';
 
 function FormularioNuevoProducto() {
     const [newProduct, setNewProduct] = useState({

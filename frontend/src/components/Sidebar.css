@@ -3,86 +3,43 @@
     background-color: #e0e0e0;
     padding: 20px;
     height: 100vh;
+    border-right: 1px solid #ccc;
 }
 
-    .sidebar nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
+.sidebar h2 {
+    margin: 0 0 20px;
+}
 
-    .sidebar .sidebar-item {
-        margin-bottom: 10px;
-        position: relative; /* Asegúrate de que esté aquí */
-    }
-
-        .sidebar .sidebar-item a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: #333;
-            border-radius: 5px;
-        }
-
-            .sidebar .sidebar-item a:hover,
-            .sidebar .sidebar-item.active a {
-                background-color: #e0e0e0;
-                color: #ff6600;
-                border-left: 5px solid #ff6600;
-                border-right: 5px solid #ff6600;
-            }
-
-        .sidebar .sidebar-item .icon {
-            margin-right: 10px;
-        }
-
-        .sidebar .sidebar-item .subtitle {
-            display: block;
-            font-size: 0.8em;
-            color: #666;
-        }
-        .sidebar .features-item a { /* Estilo específico para "FEATURES" */
-            justify-content: space-between; /* Espacio entre el texto y la flecha */
-        }
-        .sidebar .sidebar-item .arrow {
-            margin-left: 8vw; /* Espacio entre el texto y la flecha */
-        }
-
-.sidebar .sub-menu {
-    list-style: none;
+.sidebar ul {
+    list-style-type: none;
     padding: 0;
-    margin: 0;
-    display: none; /* Ocultar inicialmente */
-    position: absolute; /* Posicionamiento absoluto */
-    background-color: #f0f0f0;
-    width: 150px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 10; /* Asegúrate de que esté por encima */
-    top: 0;
-    left: 100%;
 }
 
-    .sidebar .sub-menu li { /* Agrega la línea divisoria */
-        border-bottom: 1px solid #ccc;
+.sidebar li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+    .sidebar li.active {
+        background-color: #007bff;
+        color: white;
     }
 
-    .sidebar .sub-menu li:last-child { /* Elimina la línea divisoria de la última opción */
-        border-bottom: none;
-    }
-    .sidebar .sub-menu li a {
-        display: block;
-        padding: 5px 10px;
-        text-decoration: none;
-        color: #333;
-        border-radius: 5px;
-        font-size: 0.9em;
+a {
+    color: black; /* Cambia el color del texto a negro */
+    text-decoration: none; /* Opcional: quita el subrayado */
+}
+
+    a:hover {
+        color: black; /* Asegúrate de que el color se mantenga negro al pasar el cursor */
     }
 
-            .sidebar .sub-menu li a:hover {
-                background-color: #e0e0e0;
-            }
 
-    .sidebar .sidebar-item:hover .sub-menu {
-        display: block; /* Mostrar al pasar el cursor */
+    .submenu li {
+        color: black; /* Color del texto por defecto */
+        padding: 8px; /* Espaciado interno de los elementos */
     }
+
+        .submenu li:hover {
+            background-color: lightblue; /* Color de fondo al pasar el mouse */
+        }
