@@ -66,7 +66,7 @@ function FormularioNuevoProducto() {
                 />
             </label>
             <label>
-                Descripción:
+                Descripci&oacute;n:
                 <input
                     type="text"
                     name="description"

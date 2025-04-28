@@ -38,6 +38,16 @@ function Producto() {
         // Limpiar cualquier mensaje de feedback previo (ya no es estrictamente necesario para la alerta)
         // setFeedbackMessage(null);
 
+        // Confirmar si el usuario realmente desea eliminar el producto
+
+        const confirmacion = window.confirm("Â¿Estas seguro de que deseas eliminar este producto?");
+
+        if (!confirmacion) {
+
+            return; // Si el usuario cancela, no hacer nada
+
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
                 method: 'DELETE',
@@ -69,15 +79,17 @@ function Producto() {
 
     return (
         <div>
-            <h2>Lista de Productos</h2>
+         <div className="header-container">
+            <h2 style={{ display: 'inline', marginRight: '21em' }}>Lista de Productos</h2>
             <Link to="/productos/nuevo">
-                <button>Nuevo Producto</button>
+                <button class="nuevo"> <i className="fa-solid fa-plus"></i> Nuevo Producto</button>
             </Link>
+         </div>
             {products.length > 0 ? (
                 <table>
                     <thead>
                         <tr>
-                            <th>Descripción</th>
+                            <th>Descripci&oacute;n</th>
                             <th>Marca</th>
                             <th>UPC</th>
                             <th>Precio</th>
@@ -94,9 +106,9 @@ function Producto() {
                                 <td>
                                     {/* <button onClick={() => editar(product.upc)}>Editar</button> */}
                                     <Link to={`/productos/editar/${product.upc}`}>
-                                        <button>Editar</button>
+                                        <button class="Editar">Editar</button>
                                     </Link>{' '}
-                                    <button onClick={() => eliminarProducto(product.upc)}>Eliminar</button>
+                                    <button class="Eliminar" onClick={() => eliminarProducto(product.upc)}>Eliminar</button>
                                 </td>
                             </tr>
                         ))}

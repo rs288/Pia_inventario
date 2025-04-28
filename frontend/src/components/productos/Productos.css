@@ -13,3 +13,76 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+.header-container {
+    margin-bottom: 1em; /* Agrega margen en la parte inferior */
+}
+
+.nuevo {
+
+    background-color: #5cb85c; /* Color de fondo verde */
+
+    color: white; /* Color de texto blanco */
+
+    border: none; /* Sin borde */
+
+    padding: 0.5em 1em; /* Espaciado interno */
+
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+
+    border-radius: 4px; /* Bordes redondeados (opcional) */
+
+}
+
+
+.nuevo:hover {
+
+    background-color: darkgreen; /* Color más oscuro al pasar el mouse (opcional) */
+
+}
+
+.Editar {
+
+    background-color: #337ab7; /* Color de fondo verde */
+
+    color: white; /* Color de texto blanco */
+
+    border: none; /* Sin borde */
+
+    padding: 0.5em 1em; /* Espaciado interno */
+
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+
+    border-radius: 4px; /* Bordes redondeados (opcional) */
+
+}
+
+
+.Editar:hover {
+
+    background-color: #286090; /* Color más oscuro al pasar el mouse (opcional) */
+
+}
+
+.Eliminar {
+
+    background-color: #d9534f; /* Color de fondo verde */
+
+    color: white; /* Color de texto blanco */
+
+    border: none; /* Sin borde */
+
+    padding: 0.5em 1em; /* Espaciado interno */
+
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+
+    border-radius: 4px; /* Bordes redondeados (opcional) */
+
+}
+
+
+.Eliminar:hover {
+
+    background-color: #c9302c; /* Color más oscuro al pasar el mouse (opcional) */
+
+}

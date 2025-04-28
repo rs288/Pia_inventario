@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './NuevoProducto.css';
 
 function EditarProducto() {
     const { upc } = useParams(); // Obtener el UPC de los parámetros de la URL
@@ -62,6 +63,12 @@ function EditarProducto() {
         }
     };
 
+    const handleCancel = () => {
+
+        navigate(-1); // Regresar a la página anterior
+
+    };
+
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -71,10 +78,11 @@ function EditarProducto() {
     }
 
     return (
+        <div className="new-product-form">
         <form onSubmit={handleSubmit}>
-            <h2>Editar Producto</h2>
+            <h3>Editar Producto</h3>
             <div>
-                <label>Descripción:</label>
+                <label>Descripci&oacute;n:</label>
                 <input
                     type="text"
                     name="description"
@@ -100,8 +108,12 @@ function EditarProducto() {
                     onChange={handleChange}
                 />
             </div>
-            <button type="submit">Guardar Cambios</button>
+            <div className="button-container">
+                <button type="submit" className="full-width-button">Guardar Cambios</button>
+                <button type="button" className="full-width-button" onClick={handleCancel}>Cancelar</button>
+            </div>
         </form>
+        </div>
     );
 }
 
