@@ -1,6 +1,7 @@
 .sidebar {
     width: 250px;
     background-color: #e0e0e0;
+    /*background-color: #22252E;*/
     padding: 20px;
     height: 100vh;
     border-right: 1px solid #ccc;
@@ -21,7 +22,8 @@
 }
 
     .sidebar li.active {
-        background-color: #007bff;
+        /*background-color: #007bff;*/
+        background-color: #2196F3;
         color: white;
     }
 
@@ -31,7 +33,7 @@ a {
 }
 
     a:hover {
-        color: black; /* Asegúrate de que el color se mantenga negro al pasar el cursor */
+        color: black;
     }
 
 
@@ -42,4 +44,8 @@ a {
 
         .submenu li:hover {
             background-color: lightblue; /* Color de fondo al pasar el mouse */
+        }
+
+        .sidebar i {
+            margin-right: 8px; /* Ajusta el valor según sea necesario */
         }

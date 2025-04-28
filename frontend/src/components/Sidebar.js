@@ -6,23 +6,24 @@ import './Sidebar.css';
 const Sidebar = () => {
     const location = useLocation(); // Obtiene la ubicación actual
     const menuItems = [
-        { name: 'Home', path: '/' },
-        { name: 'Reporte inventario', path: '/about' },
-        { name: 'Reporte valor de inventario', path: '/services' },
-        { name: 'Productos', path: '/productos' },
-        { name: 'Contact', path: '/contact' },
+        {/* { name: 'Home', path: '/' }, */},
+        { name: 'Productos', path: '/productos', icon: <i className="fas fa-box"></i> },
+        { name: 'Adquisiciones', path: '/adquisiciones', icon: <i className="fas fa-shopping-cart"></i> },
+        { name: 'Salidas', path: '/salidas', icon: <i className="fas fa-sign-out-alt"></i> },
+        { name: 'Reporte de inventario', path: '/inventario', icon: <i className="fas fa-warehouse"></i> },
+        { name: 'Reporte valor de inventario', path: '/valorInventario' },
     ];
 
     return (
         <div className="sidebar">
-            <h2>Menu</h2>
+            <h2>NombreApp</h2>
             <ul>
                 {menuItems.map((item) => (
                     <li
                         key={item.path}
                         className={location.pathname === item.path ? 'active' : ''}
                     >
-                        <Link to={item.path}>{item.name}</Link>
+                        <Link to={item.path}>{item.icon}{item.name}</Link>
                     </li>
                 ))}
             </ul>
