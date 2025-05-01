@@ -8,6 +8,7 @@ import EditarProducto from './components/productos/EditarProducto';
 import Adquisicion from './components/adquisiciones/Adquisicion';
 import NuevoAdquisicion from './components/adquisiciones/NuevoAdquisicion';
 import EditarAdquisicion from './components/adquisiciones/EditarAdquisicion';
+import Ventas from './components/ventas/Venta';
 
 const App = () => {
     return (
@@ -24,7 +25,7 @@ const App = () => {
                         <Route path="/adquisiciones" element={<Adquisicion />} />
                         <Route path="/adquisiciones/nuevo" element={<NuevoAdquisicion />} />
                         <Route path="/adquisiciones/editar/:upc" element={<EditarAdquisicion />} />
-                        <Route path="/salidas" element={<Productos />} />
+                        <Route path="/ventas" element={<Ventas />} />
                         <Route path="/salidas/nuevo" element={<NuevoProducto />} />
                         <Route path="/salidas/editar/:upc" element={<EditarProducto />} />
                         <Route path="/inventario" element={<p>Aqu&iacute; est&aacute;n nuestro almacen (inventario).</p>} />

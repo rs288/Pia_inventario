@@ -1,0 +1,78 @@
+﻿.new-product-form {
+    width: 80%; /* Cambia este valor según tus necesidades */
+    max-width: 600px; /* Este es un valor opcional para limitar el ancho máximo */
+    margin: 0 auto; /* Esto centra el formulario */
+}
+
+/*.new-product-form {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+}*/
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.full-width-button {
+    width: 100%; /* Botones ocupan el 100% del ancho */
+    margin-bottom: 10px; /* Espacio entre los botones */
+    padding: 10px; /* Espaciado interno para los botones */
+    /*background-color: #007bff; /* Color de fondo (ajusta según tu diseño) */
+    /*color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+}
+
+    .full-width-button:hover {
+        background-color: #0056b3; /* Color de fondo al pasar el mouse (ajusta según tu diseño) */
+    }
+
+    .new-product-form h3 {
+        text-align: center;
+        color: #333;
+    }
+
+    .new-product-form label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .new-product-form input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .new-product-form button {
+        width: 48%;
+        padding: 10px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        .new-product-form button:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .new-product-form button:nth-child(2) {
+            /*background-color: #dc3545;*/
+            color: black;
+        }
+
+            .new-product-form button:nth-child(2):hover {
+                background-color: #c82333;
+                color: white;
+            }

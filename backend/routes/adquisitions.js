@@ -3,7 +3,7 @@
 const express = require('express');
 //import supabase from '../settings/db.js';
 const supabase = require('../settings/db.js');
-const productsRouter = require('../routes/products.js');
+//const productsRouter = require('../routes/products.js');
 
 
 const router = express.Router();
@@ -42,16 +42,16 @@ router.put('/update/:upc', async (req, res) => {
 // Endpoint para obtener productos
 router.get('/', async (req, res) => {
   console.log(); // Imprime un espacio en blanco
-  console.log('Solicitud recibida en /api/products');
+  console.log('Solicitud recibida en /api/adquisitions');
   const { data, error } = await supabase
-    .from('products')
-    .select(); // Selecciona todos los registros de la tabla 'products'
+        .from('adquisitions_view')
+        .select('*');// Selecciona todos los registros de la vista 'adquisitions'
 
   if (error) {
-    console.error('Error al obtener los productos:', error.message);
-    return res.status(500).json({ error: 'Error al obtener los productos' }); // Retorna un error 500
+    console.error('Error al obtener los productos adquiridos:', error.message);
+    return res.status(500).json({ error: 'Error al obtener los productos adquiridos' }); // Retorna un error 500
   } else {
-    console.log('Productos obtenidos:', data);
+    console.log('Productos adquiridos:', data);
     return res.status(200).json(data); // Retorna los registros obtenidos con un estado 200
   }
 });

@@ -9,9 +9,9 @@ const Sidebar = () => {
         {/* { name: 'Home', path: '/' }, */},
         { name: 'Productos', path: '/productos', icon: <i className="fas fa-box"></i> },
         { name: 'Adquisiciones', path: '/adquisiciones', icon: <i className="fas fa-shopping-cart"></i> },
-        { name: 'Salidas', path: '/salidas', icon: <i className="fas fa-sign-out-alt"></i> },
+        { name: 'Ventas', path: '/ventas', icon: <i className="fas fa-sign-out-alt"></i> },
         { name: 'Reporte de inventario', path: '/inventario', icon: <i className="fas fa-warehouse"></i> },
-        { name: 'Reporte valor de inventario', path: '/valorInventario' },
+        { name: 'Reporte valor de inventario', path: '/valorInventario', icon: <i className="fa-solid fa-dollar-sign"></i> },
     ];
 
     return (

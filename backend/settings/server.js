@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 //import productsRouter from '../routes/products.js'; // Importa el router de productos
 const productsRouter = require('../routes/products.js');
+const adquisitionsRouter = require('../routes/adquisitions.js');
+const outputsRouter = require('../routes/outputs.js');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -23,6 +25,8 @@ app.options('*', cors()); // Agrega esto para manejar solicitudes OPTIONS
 
 // Usar el router de productos
 app.use('/api/products', productsRouter);
+app.use('/api/adquisitions', adquisitionsRouter);
+app.use('/api/outputs', outputsRouter);
 
 // Inicia el servidor
 app.listen(PORT, () => {
