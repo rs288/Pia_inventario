@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
+import tienda from '../assets/tienda.png'; // Ajusta la ruta si está en otra carpet
 
 const Sidebar = () => {
     const location = useLocation(); // Obtiene la ubicación actual
@@ -16,7 +17,12 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
-            <h2>NombreApp</h2>
+            <h2 className="app-name">NombreApp</h2>
+			<div className="logo-container">
+                <img src={tienda} alt="Tienda" className="logo-img" />
+            </div>
+			
+	
             <ul>
                 {menuItems.map((item) => (
                     <li

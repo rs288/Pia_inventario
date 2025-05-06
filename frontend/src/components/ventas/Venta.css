@@ -20,7 +20,7 @@ th {
 
 .nuevo {
 
-    background-color: #5cb85c; /* Color de fondo verde */
+    background-color: #00227e; /* Color de fondo verde */
 
     color: white; /* Color de texto blanco */
 
@@ -43,7 +43,7 @@ th {
 
 .Editar {
 
-    background-color: #337ab7; /* Color de fondo verde */
+    background-color: darkgreen; /* Color de fondo verde */
 
     color: white; /* Color de texto blanco */
 
@@ -60,13 +60,13 @@ th {
 
 .Editar:hover {
 
-    background-color: #286090; /* Color más oscuro al pasar el mouse (opcional) */
+    background-color: darkblue; /* Color más oscuro al pasar el mouse (opcional) */
 
 }
 
 .Eliminar {
 
-    background-color: #d9534f; /* Color de fondo verde */
+    background-color: gray; /* Color de fondo verde */
 
     color: white; /* Color de texto blanco */
 
@@ -83,6 +83,6 @@ th {
 
 .Eliminar:hover {
 
-    background-color: #c9302c; /* Color más oscuro al pasar el mouse (opcional) */
+    background-color: #d80202; /* Color más oscuro al pasar el mouse (opcional) */
 
 }

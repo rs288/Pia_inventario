@@ -1,10 +1,11 @@
 .sidebar {
     width: 250px;
-    background-color: #e0e0e0;
+    background-color: #032f78;
     /*background-color: #22252E;*/
     padding: 20px;
     height: 100vh;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid #16a710;
+	color: white;
 }
 
 .sidebar h2 {
@@ -23,29 +24,47 @@
 
     .sidebar li.active {
         /*background-color: #007bff;*/
-        background-color: #2196F3;
+        background-color: black;
         color: white;
     }
 
 a {
-    color: black; /* Cambia el color del texto a negro */
+    color: white; /* Cambia el color del texto a negro */
     text-decoration: none; /* Opcional: quita el subrayado */
 }
 
     a:hover {
-        color: black;
+        color: #020202;
     }
 
 
     .submenu li {
-        color: black; /* Color del texto por defecto */
+        color: white; /* Color del texto por defecto */
         padding: 8px; /* Espaciado interno de los elementos */
     }
 
         .submenu li:hover {
-            background-color: lightblue; /* Color de fondo al pasar el mouse */
+            background-color: #020202; /* Color de fondo al pasar el mouse */
         }
 
         .sidebar i {
             margin-right: 8px; /* Ajusta el valor según sea necesario */
         }
+
+.logo-container {
+    text-align: center;
+    padding: 15px;
+}
+
+.logo-img {
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+}
+.app-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    color: #fff; /* o el color que combine con tu sidebar */
+	text-align: center;
+}
