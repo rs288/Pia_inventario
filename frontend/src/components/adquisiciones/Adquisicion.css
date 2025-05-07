@@ -86,3 +86,50 @@ th {
     background-color: #c9302c; /* Color más oscuro al pasar el mouse (opcional) */
 
 }
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white;
+    padding: 2em;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-actions {
+    margin-top: 1.5em;
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-btn {
+    background-color: #d73a49;
+    color: white;
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #ddd;
+    padding: 0.5em 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+

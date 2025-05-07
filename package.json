@@ -2,10 +2,12 @@
     "name": "PIA",
     "version": "1.0.0",
     "scripts": {
+        "dev": "vite",
         "start": "concurrently \"npm start --prefix backend\" \"npm start --prefix frontend\"",
         "install-all": "concurrently \"npm install -verbose --prefix backend\" \"npm install -verbose --prefix frontend\""
     },
     "devDependencies": {
-        "concurrently": "^9.1.2"
+        "concurrently": "^9.1.2",
+        "vite": "^6.3.4"
     }
 }
