@@ -1,11 +1,11 @@
-import './Productos.css'; // Importa el archivo CSS
+﻿import './Productos.css';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Producto() {
     const [products, setProducts] = useState([]);
     const [error, setError] = useState(null);
-    const [feedbackMessage, setFeedbackMessage] = useState(null);
+    const [productToDelete, setProductToDelete] = useState(null); // Producto que se quiere eliminar
 
     useEffect(() => {
         fetchProducts();
@@ -25,71 +25,49 @@ function Producto() {
         }
     };
 
-    //const mostrarUPC = (upc) => {
-    //    alert('El UPC del producto es: ' + upc);
-    //};
+    const confirmarEliminacion = (product) => {
+        setProductToDelete(product); // Mostrar modal con datos del producto
+    };
 
-    //const editar = (upc) => {
-        // Redirigir al formulario de edici�n
-    //    window.location.href = `/productos/editar/${upc}`;
-    //};
+    const cancelarEliminacion = () => {
+        setProductToDelete(null); // Ocultar modal
+    };
 
-    const eliminarProducto = async (upc) => {
-        // Limpiar cualquier mensaje de feedback previo (ya no es estrictamente necesario para la alerta)
-        // setFeedbackMessage(null);
-
-        // Confirmar si el usuario realmente desea eliminar el producto
-
-        const confirmacion = window.confirm("¿Estas seguro de que deseas eliminar este producto?");
-
-        if (!confirmacion) {
-
-            return; // Si el usuario cancela, no hacer nada
-
-        }
+    const eliminarProducto = async () => {
+        if (!productToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
+            const response = await fetch(`http://localhost:8080/api/products/delete/${productToDelete.upc}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
-                const mensaje = 'Producto eliminado correctamente';
-                setFeedbackMessage(mensaje);
-                alert(mensaje); // Mostrar el mensaje en una alerta
-                fetchProducts();
-            } else if (response.status === 404) {
-                const errorData = await response.json();
-                const mensaje = errorData.message || `No se encontr� el producto con UPC ${upc}`;
-                setFeedbackMessage(mensaje);
-                alert(mensaje); // Mostrar el mensaje en una alerta
+                alert(`Producto "${productToDelete.description}" eliminado correctamente`);
+                setProductToDelete(null); // Cerrar modal
+                fetchProducts(); // Refrescar la lista
             } else {
                 const errorData = await response.json();
-                const mensaje = errorData.error || `Error al eliminar el producto con UPC ${upc}`;
-                setFeedbackMessage(mensaje);
-                alert(mensaje); // Mostrar el mensaje en una alerta
+                alert(errorData.message || 'Error al eliminar el producto');
             }
         } catch (error) {
-            const mensaje = `Error al eliminar el producto con UPC ${upc}: ${error.message}`;
-            setFeedbackMessage(mensaje);
-            alert(mensaje); // Mostrar el mensaje en una alerta
-            console.error('Hubo un problema al eliminar el producto:', error);
+            alert('Error: ' + error.message);
         }
     };
 
     return (
         <div>
-         <div className="header-container">
-            <h2 style={{ display: 'inline', marginRight: '21em' }}>Lista de Productos</h2>
-            <Link to="/productos/nuevo">
-                <button class="nuevo"> <i className="fa-solid fa-plus"></i> Nuevo Producto</button>
-            </Link>
-         </div>
+            <div className="header-container">
+                <h2 style={{ display: 'inline', marginRight: '21em' }}>Lista de Productos</h2>
+                <Link to="/productos/nuevo">
+                    <button className="nuevo"> <i className="fa-solid fa-plus"></i> Nuevo Producto</button>
+                </Link>
+            </div>
+
             {products.length > 0 ? (
                 <table>
                     <thead>
                         <tr>
-                            <th>Descripci&oacute;n</th>
+                            <th>Descripción</th>
                             <th>Marca</th>
                             <th>UPC</th>
                             <th>Precio</th>
@@ -104,21 +82,36 @@ function Producto() {
                                 <td>{product.upc}</td>
                                 <td>${product.unit_price && product.unit_price.toFixed(2)}</td>
                                 <td>
-                                    {/* <button onClick={() => editar(product.upc)}>Editar</button> */}
                                     <Link to={`/productos/editar/${product.upc}`}>
-                                        <button class="Editar">Editar</button>
+                                        <button className="Editar">Editar</button>
                                     </Link>{' '}
-                                    <button class="Eliminar" onClick={() => eliminarProducto(product.upc)}>Eliminar</button>
+                                    <button className="Eliminar" onClick={() => confirmarEliminacion(product)}>Eliminar</button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <div>Cargando productos...</div>
+                <div>{error ? `Error: ${error}` : 'Cargando productos...'}</div>
+            )}
+
+            {/* Modal personalizado de confirmación */}
+            {productToDelete && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>¿Eliminar "{productToDelete.description}"?</h3>
+                        <p>UPC: {productToDelete.upc}</p>
+                        <p>Esta acción no se puede deshacer.</p>
+                        <div className="modal-actions">
+                            <button className="delete-btn" onClick={eliminarProducto}>Sí, eliminar</button>
+                            <button className="cancel-btn" onClick={cancelarEliminacion}>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
 }
 
 export default Producto;
+

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './NuevoProducto.css';
 
 function EditarProducto() {
-    const { upc } = useParams(); // Obtener el UPC de los par�metros de la URL
-    const navigate = useNavigate(); // Para redirigir despu�s de la edici�n
+    const { upc } = useParams(); // Obtener el UPC de los parámetros de la URL
+    const navigate = useNavigate(); // Para redirigir después de la edición
     const [product, setProduct] = useState({
         description: '',
         brand: '',
         unit_price: 0,
     });
     const [error, setError] = useState(null);
-
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -65,10 +65,30 @@ function EditarProducto() {
 
     const handleCancel = () => {
 
-        navigate(-1); // Regresar a la p�gina anterior
+        navigate(-1); // Regresar a la página anterior
 
     };
+    const handleDeleteConfirmed = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
+                method: 'DELETE',
+            });
 
+            if (response.ok) {
+                alert('Producto eliminado correctamente');
+                navigate('/productos');
+            } else {
+                const errorData = await response.json();
+                alert(errorData.error || 'Error al eliminar el producto');
+            }
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+            alert('Error al eliminar el producto');
+        } finally {
+            setShowConfirmDelete(false);
+        }
+    };
+ 
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -110,11 +130,48 @@ function EditarProducto() {
             </div>
             <div className="button-container">
                 <button type="submit" className="full-width-button">Guardar Cambios</button>
-                <button type="button" className="full-width-button" onClick={handleCancel}>Cancelar</button>
+                    <button type="button" className="full-width-button" onClick={handleCancel}>Cancelar</button>
+                    <button
+                        type="button"
+                        className="full-width-button"
+                        onClick={() => setShowConfirmDelete(true)}
+                        style={{ backgroundColor: '#e74c3c', color: 'white', marginTop: '10px' }}
+                    >
+                        Eliminar Producto
+                    </button>
+
             </div>
         </form>
-        </div>
+        
+         {
+        showConfirmDelete && (
+        <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h4>Eliminar "{product.description}"</h4>
+                        <p>Esta acción no se puede deshacer.</p>
+                        <div className="lock-icon">🔒</div>
+                            <p style={{ fontWeight: 'bold' }}>¿Desea borrar este producto?</p>
+                        <button
+                            className="full-width-button"
+                            onClick={handleDeleteConfirmed}
+                            style={{ backgroundColor: '#d9534f', color: 'white', marginTop: '10px' }}
+                        >
+                            Quiero eliminar este producto
+                        </button>
+                        <button
+                            className="full-width-button"
+                            onClick={() => setShowConfirmDelete(false)}
+                            style={{ marginTop: '10px' }}
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+    )
+}
+        </div >
     );
+
 }
 
 export default EditarProducto;
