@@ -1,91 +1,4 @@
-table {
-    width: 80%;
-    border-collapse: collapse;
-    margin: 0 auto;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.header-container {
-    margin-bottom: 1em; /* Agrega margen en la parte inferior */
-}
-
-.nuevo {
-
-    background-color: #07149d; /* Color de fondo verde */
-
-    color: white; /* Color de texto blanco */
-
-    border: none; /* Sin borde */
-
-    padding: 0.5em 1em; /* Espaciado interno */
-
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-
-    border-radius: 4px; /* Bordes redondeados (opcional) */
-
-}
-
-
-.nuevo:hover {
-
-    background-color: darkgreen; /* Color más oscuro al pasar el mouse (opcional) */
-
-}
-
-.Editar {
-
-    background-color: darkgreen; /* Color de fondo verde */
-
-    color: white; /* Color de texto blanco */
-
-    border: none; /* Sin borde */
-
-    padding: 0.5em 1em; /* Espaciado interno */
-
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-
-    border-radius: 4px; /* Bordes redondeados (opcional) */
-
-}
-
-
-.Editar:hover {
-
-    background-color: #000000; /* Color más oscuro al pasar el mouse (opcional) */
-
-}
-
-.Eliminar {
-
-    background-color: gray; /* Color de fondo verde */
-
-    color: white; /* Color de texto blanco */
-
-    border: none; /* Sin borde */
-
-    padding: 0.5em 1em; /* Espaciado interno */
-
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-
-    border-radius: 4px; /* Bordes redondeados (opcional) */
-
-}
-
-
-.Eliminar:hover {
-
-    background-color: red; /* Color más oscuro al pasar el mouse (opcional) */
-
-}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .modal-overlay {
     position: fixed;
@@ -101,36 +14,95 @@ th {
 }
 
 .modal {
-    background: white;
-    padding: 2em;
-    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #fdfcfb, #e2ebf0); /* Fondo suave degradado */
+    padding: 2.5em;
+    border-radius: 20px;
     width: 400px;
     max-width: 90%;
     text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    border: 3px solid #4ac9ff;
+    color: #2c3e50;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal h3 {
+    font-weight: 600;
+    font-size: 1.3em;
+    margin-bottom: 1em;
+    color: #1a1a1a;
+}
+
+.modal p {
+    margin: 0.5em 0;
+}
+
+.modal p strong {
+    font-weight: 600;
+    color: #444;
 }
 
 .modal-actions {
-    margin-top: 1.5em;
+    margin-top: 1.8em;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 .delete-btn {
-    background-color: #d73a49;
+    background-color: #e63946;
     color: white;
-    padding: 0.5em 1.2em;
+    padding: 0.6em 1.5em;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c30010;
 }
 
 .cancel-btn {
-    background-color: #ddd;
-    padding: 0.5em 1.2em;
+    background-color: #adb5bd;
+    color: rgb(42, 15, 15);
+    padding: 0.6em 1.5em;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
 }
 
+.cancel-btn:hover {
+    background-color: #6c757d;
+}
 
+.modal .warning-text {
+    color: red;
+    font-weight: bold;
+    margin-top: 1em;
+}
+
+.mensaje-exito {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin: 15px 0;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Animación opcional */
+@keyframes fadeIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

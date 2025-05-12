@@ -1,4 +1,4 @@
-/// NuevoProducto.js
+Ôªø/// NuevoProducto.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import './NuevoProducto.css';
@@ -35,7 +35,7 @@ function FormularioNuevoProducto() {
                 const data = await response.json();
                 setFeedbackMessage('Producto agregado exitosamente');
                 alert('Producto agregado exitosamente');
-                navigate('/productos'); // Redirige a la p·gina principal (lista de productos)
+                navigate('/productos'); // Redirige a la p√°gina principal (lista de productos)
             } else {
                 const errorData = await response.json();
                 const errorMessage = errorData.error || 'Error al agregar el producto';
@@ -50,7 +50,7 @@ function FormularioNuevoProducto() {
     };
 
     const handleCancelAdd = () => {
-        navigate('/productos'); // Redirige a la p·gina principal
+        navigate('/productos'); // Redirige a la p√°gina principal
     };
 
     return (

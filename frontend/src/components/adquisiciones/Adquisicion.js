@@ -1,4 +1,4 @@
-import './Adquisicion.css';
+﻿import './Adquisicion.css';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -6,7 +6,7 @@ function Adquisicion() {
     const [products, setProducts] = useState([]);
     const [error, setError] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState(null);
-    const [upcToDelete, setUpcToDelete] = useState(null);
+    const [productoAEliminar, setProductoAEliminar] = useState(null);
 
     useEffect(() => {
         fetchProducts();
@@ -27,32 +27,36 @@ function Adquisicion() {
     };
 
     const eliminarProducto = async () => {
-        if (!upcToDelete) return;
+        if (!productoAEliminar) return;
+
+        const upc = productoAEliminar.upc;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/delete/${upcToDelete}`, {
+            const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
                 method: 'DELETE',
             });
 
+            let mensaje;
             if (response.ok) {
-                const mensaje = 'Producto adquirido eliminado correctamente';
-                setFeedbackMessage(mensaje);
+                mensaje = 'Producto adquirido eliminado correctamente';
                 fetchProducts();
             } else if (response.status === 404) {
                 const errorData = await response.json();
-                const mensaje = errorData.message || `No se encontr� el producto adquirido con UPC ${upcToDelete}`;
-                setFeedbackMessage(mensaje);
+                mensaje = errorData.message || `No se encontró el producto adquirido con UPC ${upc}`;
             } else {
                 const errorData = await response.json();
-                const mensaje = errorData.error || `Error al eliminar el producto adquirido UPC ${upcToDelete}`;
-                setFeedbackMessage(mensaje);
+                mensaje = errorData.error || `Error al eliminar el producto adquirido UPC ${upc}`;
             }
+
+            setFeedbackMessage(mensaje);
+            setTimeout(() => setFeedbackMessage(null), 3000);
         } catch (error) {
-            const mensaje = `Error al eliminar el producto adquirido UPC ${upcToDelete}: ${error.message}`;
+            const mensaje = `Error al eliminar el producto adquirido UPC ${upc}: ${error.message}`;
             setFeedbackMessage(mensaje);
             console.error('Hubo un problema al eliminar el producto adquirido:', error);
+            setTimeout(() => setFeedbackMessage(null), 3000);
         } finally {
-            setUpcToDelete(null);
+            setProductoAEliminar(null);
         }
     };
 
@@ -70,7 +74,7 @@ function Adquisicion() {
                     <thead>
                         <tr>
                             <th>Order_id</th>
-                            <th>Descripci&oacute;n</th>
+                            <th>Descripción</th>
                             <th>Marca</th>
                             <th>UPC</th>
                             <th>Quantity</th>
@@ -80,7 +84,7 @@ function Adquisicion() {
                     </thead>
                     <tbody>
                         {products.map(product => (
-                            <tr key={product.order_id}>
+                            <tr key={`${product.order_id}-${product.upc}`}>
                                 <td>{product.order_id}</td>
                                 <td>{product.description}</td>
                                 <td>{product.brand}</td>
@@ -91,34 +95,48 @@ function Adquisicion() {
                                     <Link to={`/productos/editar/${product.upc}`}>
                                         <button className="Editar">Editar</button>
                                     </Link>{' '}
-                                    <button className="Eliminar" onClick={() => setUpcToDelete(product.upc)}>Eliminar</button>
+                                    <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>Eliminar</button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             ) : (
-                <div>Cargando productos adquiridos...</div>
+                <div>{error ? `Error: ${error}` : 'Cargando productos...'}</div>
             )}
-      
 
 
 
-
-
-            {upcToDelete && (
+            {/* Modal de confirmación */}
+            {productoAEliminar && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <p>�Est�s seguro de que deseas eliminar este producto adquirido?</p>
-                        <div className="modal-buttons">
-                            <button onClick={eliminarProducto} className="delete-btn">S�, eliminar</button>
-                            <button onClick={() => setUpcToDelete(null)} className="cancel-btn">Cancelar</button>
-                        </div>
+                        <h3>¿Estás seguro de que deseas eliminar este producto adquirido?</h3>
+                       
+                            
+                                <p><strong>Order ID:</strong>{productoAEliminar.order_id}</p>
+                            <p><strong>Descripción:</strong>{productoAEliminar.description}</p>
+                                 <p><strong>UPC:</strong>{productoAEliminar.upc}</p>
+                                <p><strong>Cantidad:</strong>{productoAEliminar.quantity}</p>
+                                <p><strong>Status:</strong>{productoAEliminar.status}</p>
+                                <p style={{ color: 'red' }}>¡Esta acción no se puede deshacer!</p>
+                            
+                            <div className="modal-actions">
+                            
+                                <button onClick={eliminarProducto} className="delete-btn" style={{ marginRight: '1em' }}>
+                                    Sí, eliminar
+                                </button>
+                                <button onClick={() => setProductoAEliminar(null)} className="cancel-btn">
+                                    Cancelar
+                                </button>
+                            </div>
                     </div>
-                </div>
+                    </div>
             )}
-        </div>
-    );
+                </div>
+            );
 }
 
+
 export default Adquisicion;
+

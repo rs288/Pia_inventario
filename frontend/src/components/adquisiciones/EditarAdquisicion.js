@@ -51,7 +51,7 @@ function EditarAdquisicion() {
 
             if (response.ok) {
                 alert('Producto actualizado correctamente');
-                navigate('/productos'); // Redirigir a la lista de productos
+                navigate('/adquisiciones'); // Ajusta esta ruta si es necesario
             } else {
                 const errorData = await response.json();
                 const mensaje = errorData.error || 'Error al actualizar el producto';
@@ -64,9 +64,7 @@ function EditarAdquisicion() {
     };
 
     const handleCancel = () => {
-
         navigate(-1); // Regresar a la página anterior
-
     };
 
     if (error) {
@@ -118,3 +116,4 @@ function EditarAdquisicion() {
 }
 
 export default EditarAdquisicion;
+

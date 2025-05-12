@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './NuevoProducto.css';
 
+
+
+
+
 function EditarProducto() {
     const { upc } = useParams(); // Obtener el UPC de los parámetros de la URL
     const navigate = useNavigate(); // Para redirigir después de la edición
