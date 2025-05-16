@@ -1,4 +1,4 @@
-﻿import './Adquisicion.css';
+﻿﻿import './Adquisicion.css';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -172,4 +172,3 @@ function Adquisicion() {
 }
 
 export default Adquisicion;
-
