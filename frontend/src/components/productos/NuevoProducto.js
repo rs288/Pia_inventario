@@ -21,33 +21,54 @@ function FormularioNuevoProducto() {
         }));
     };
 
-    const handleSaveNewProduct = async () => {
-        try {
-            const response = await fetch('http://localhost:8080/api/products/new', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(newProduct),
-            });
 
-            if (response.ok) {
-                const data = await response.json();
-                setFeedbackMessage('Producto agregado exitosamente');
-                alert('Producto agregado exitosamente');
-                navigate('/productos'); // Redirige a la página principal (lista de productos)
-            } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.error || 'Error al agregar el producto';
-                setFeedbackMessage(errorMessage);
-                alert(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error al agregar el producto:', error);
-            setFeedbackMessage('Error al agregar el producto');
-            alert('Error al agregar el producto');
+    const handleSaveNewProduct = async () => {
+    // Validación del precio
+    const price = parseFloat(newProduct.unit_price);
+	 if (!newProduct.description.trim()) {
+        setFeedbackMessage('La descripción no puede estar vacía');
+        return;
+    }
+	  if (!newProduct.brand.trim()) {
+        setFeedbackMessage('La marca no puede estar vacía');
+        return;
+    }
+    if (isNaN(price) || price <= 0) {
+		setFeedbackMessage('El precio debe ser un número mayor a 0');
+		alert('El precio debe ser un número mayor a 0');
+	
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/api/products/new', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProduct),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setFeedbackMessage('Producto agregado exitosamente');
+            alert('Producto agregado exitosamente');
+            navigate('/productos'); // Redirige a la página principal
+        } else {
+            const errorData = await response.json();
+            const errorMessage = errorData.error || 'Error al agregar el producto';
+            setFeedbackMessage(errorMessage);
+            alert(errorMessage);
         }
-    };
+    } catch (error) {
+        console.error('Error al agregar el producto:', error);
+        setFeedbackMessage('Error al agregar el producto');
+        alert('Error al agregar el producto');
+    }
+};
+
+
+
 
     const handleCancelAdd = () => {
         navigate('/productos'); // Redirige a la página principal
@@ -55,7 +76,14 @@ function FormularioNuevoProducto() {
 
     return (
         <div className="new-product-form">
+		
             <h3>Agregar Nuevo Producto</h3>
+						
+		{feedbackMessage && (
+			<div className="feedback-message">
+				{feedbackMessage}
+			</div>
+)}
             <label>
                 UPC:
                 <input

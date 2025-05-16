@@ -36,14 +36,41 @@ function EditarProducto() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProduct((prevProduct) => ({
-            ...prevProduct,
-            [name]: name === 'unit_price' ? parseFloat(value) : value,
-        }));
+		
+		if (name === 'unit_price') {
+            // Permitimos string vacío para borrar y escribir
+            if (value === '') {
+                setProduct(prev => ({ ...prev, unit_price: '' }));
+            } else {
+                // Solo actualizamos si es un número válido
+                const parsedValue = parseFloat(value);
+                if (!isNaN(parsedValue)) {
+                    setProduct(prev => ({ ...prev, unit_price: value }));
+                }
+            }
+        } else {
+            setProduct(prev => ({ ...prev, [name]: value }));
+        }
+		
+	
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+		  if (!product.description.trim()) {
+            alert('La descripción no puede estar vacía');
+            return;
+        }
+		
+        if (!product.brand.trim()) {
+            alert('La marca no puede estar vacía');
+            return;
+        }
+		  const precio = parseFloat(product.unit_price);
+        if (isNaN(precio) || precio <= 0) {
+            alert('El precio debe ser un número mayor a 0');
+            return;
+        }
         try {
             const response = await fetch(`http://localhost:8080/api/products/update/${upc}`, {
                 method: 'PUT',
