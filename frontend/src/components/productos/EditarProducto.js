@@ -7,7 +7,7 @@ import './NuevoProducto.css';
 
 
 function EditarProducto() {
-    const { upc } = useParams(); // Obtener el UPC de los parámetros de la URL
+    const { id } = useParams(); // Obtener el UPC de los parámetros de la URL
     const navigate = useNavigate(); // Para redirigir después de la edición
     const [product, setProduct] = useState({
         description: '',
@@ -19,7 +19,7 @@ function EditarProducto() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/products/upc/${upc}`);
+                const response = await fetch(`http://localhost:8080/api/products/id/${id}`);
                 if (!response.ok) {
                     throw new Error('Error al cargar el producto ');
                 }
@@ -32,7 +32,7 @@ function EditarProducto() {
         };
 
         fetchProduct();
-    }, [upc]);
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -72,7 +72,7 @@ function EditarProducto() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:8080/api/products/update/${upc}`, {
+            const response = await fetch(`http://localhost:8080/api/products/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

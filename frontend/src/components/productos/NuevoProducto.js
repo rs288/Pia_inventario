@@ -5,7 +5,6 @@ import './NuevoProducto.css';
 
 function FormularioNuevoProducto() {
     const [newProduct, setNewProduct] = useState({
-        upc: '',
         description: '',
         brand: '',
         unit_price: ''
@@ -84,15 +83,6 @@ function FormularioNuevoProducto() {
 				{feedbackMessage}
 			</div>
 )}
-            <label>
-                UPC:
-                <input
-                    type="number"
-                    name="upc"
-                    value={newProduct.upc}
-                    onChange={handleInputChange}
-                />
-            </label>
             <label>
                 Descripci&oacute;n:
                 <input

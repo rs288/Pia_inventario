@@ -38,7 +38,7 @@ function Producto() {
         if (!productToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/delete/${productToDelete.upc}`, {
+            const response = await fetch(`http://localhost:8080/api/products/delete/${productToDelete.id}`, {
                 method: 'DELETE',
             });
 
@@ -77,22 +77,22 @@ function Producto() {
                 <table>
                     <thead>
                         <tr>
+                            <th>id</th>
                             <th>Descripción</th>
                             <th>Marca</th>
-                            <th>UPC</th>
                             <th>Precio</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {products.map(product => (
-                            <tr key={product.upc}>
+                            <tr key={product.id}>
+                                <td>{product.id}</td>
                                 <td>{product.description}</td>
                                 <td>{product.brand}</td>
-                                <td>{product.upc}</td>
                                 <td>${product.unit_price && product.unit_price.toFixed(2)}</td>
                                 <td>
-                                    <Link to={`/productos/editar/${product.upc}`}>
+                                    <Link to={`/productos/editar/${product.id}`}>
                                         <button className="Editar">Editar</button>
                                     </Link>{' '}
                                     <button className="Eliminar" onClick={() => confirmarEliminacion(product)}>Eliminar</button>
@@ -109,9 +109,9 @@ function Producto() {
                 <div className="modal-overlay">
                     <div className="modal">
                         <h3>¿Estás seguro de que deseas eliminar este producto?</h3>
+                        <p><strong>Id:</strong> {productToDelete.id}</p>
                         <p><strong>Descripción:</strong> {productToDelete.description}</p>
                         <p><strong>Marca:</strong> {productToDelete.brand}</p>
-                        <p><strong>UPC:</strong> {productToDelete.upc}</p>
                         <p><strong>Precio:</strong> ${productToDelete.unit_price?.toFixed(2)}</p>
                         <p style={{ color: 'red' }}>¡Esta acción no se puede deshacer!</p>
                         <div className="modal-actions">
