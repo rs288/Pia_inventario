@@ -1,4 +1,4 @@
-﻿﻿import './Adquisicion.css';
+﻿import './Adquisicion.css';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -92,7 +92,7 @@ function Adquisicion() {
             <div className="header-container">
                 <h2 style={{ display: 'inline', marginRight: '16em' }}>Lista de Productos Adquiridos</h2>
                 <Link to="/adquisiciones/nuevo">
-                    <button className="nuevo"><i className="fa-solid fa-plus"></i> Nuevo Producto</button>
+                    <button className="nuevo"><i className="fa-solid fa-plus"></i> Nuevo Producto adquirido</button>
                 </Link>
             </div>
 

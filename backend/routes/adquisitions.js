@@ -106,25 +106,24 @@ router.delete('/delete/:upc', async (req, res) => {
         }
     });
 
-// Ruta para obtener un producto por UPC
+// Ruta para obtener un producto por descripción
 router.get('/search', async (req, res) => {
+    const { description } = req.query; // Obtiene el término de búsqueda de los parámetros de la consulta
 
-    const { upc } = req.query; // Obtiene el UPC de los parámetros de la consulta
-
-    if (!upc) {
-        return res.status(400).json({ error: 'El campo "upc" es requerido.' });
+    if (!description) {
+        return res.status(400).json({ error: 'El campo "description" es requerido.' });
     }
 
     const { data, error } = await supabase
         .from('products')
-        .select('brand, description')
-        .eq('upc', upc)
-        .single();
+        .select('brand')
+        .ilike('description', `%${description}%`); // Utiliza ilike para buscar insensiblemente
 
     if (error) {
         return res.status(404).json({ error: 'Producto no encontrado' });
     }
-    console.log('Producto encontrado con el UPC:', data);
+
+    console.log('Productos encontrados con la descripción:', data);
     res.status(200).json(data);
 });
 
