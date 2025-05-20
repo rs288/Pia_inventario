@@ -32,7 +32,7 @@ function Adquisicion() {
         setProducts(updatedProducts);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/update/${updatedProducts[index].upc}`, {
+            const response = await fetch(`http://localhost:8080/api/products/update/${updatedProducts[index].id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,10 +56,10 @@ function Adquisicion() {
     const eliminarProducto = async () => {
         if (!productoAEliminar) return;
 
-        const upc = productoAEliminar.upc;
+        const id = productoAEliminar.id;
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
+            const response = await fetch(`http://localhost:8080/api/products/delete/${id}`, {
                 method: 'DELETE',
             });
 
@@ -69,16 +69,16 @@ function Adquisicion() {
                 fetchProducts();
             } else if (response.status === 404) {
                 const errorData = await response.json();
-                mensaje = errorData.message || `No se encontró el producto adquirido con UPC ${upc}`;
+                mensaje = errorData.message || `No se encontró el producto adquirido con UPC ${id}`;
             } else {
                 const errorData = await response.json();
-                mensaje = errorData.error || `Error al eliminar el producto adquirido UPC ${upc}`;
+                mensaje = errorData.error || `Error al eliminar el producto adquirido UPC ${id}`;
             }
 
             setFeedbackMessage(mensaje);
             setTimeout(() => setFeedbackMessage(null), 3000);
         } catch (error) {
-            const mensaje = `Error al eliminar el producto adquirido UPC ${upc}: ${error.message}`;
+            const mensaje = `Error al eliminar el producto adquirido UPC ${id}: ${error.message}`;
             setFeedbackMessage(mensaje);
             console.error('Hubo un problema al eliminar el producto adquirido:', error);
             setTimeout(() => setFeedbackMessage(null), 3000);
@@ -105,7 +105,7 @@ function Adquisicion() {
                             <th>Order_id</th>
                             <th>Descripción</th>
                             <th>Marca</th>
-                            <th>UPC</th>
+                            <th>id</th>
                             <th>Quantity</th>
                             <th>Status</th>
                             <th>Opciones</th>
@@ -113,7 +113,7 @@ function Adquisicion() {
                     </thead>
                     <tbody>
                         {products.map((product, index) => (
-                            <tr key={`${product.order_id}-${product.upc}`}>
+                            <tr key={`${product.order_id}-${product.id}`}>
                                 <td>{product.order_id}</td>
                                 <td contentEditable suppressContentEditableWarning
                                     onBlur={(e) => handleEdit(index, 'description', e.target.innerText)}>
@@ -123,7 +123,7 @@ function Adquisicion() {
                                     onBlur={(e) => handleEdit(index, 'brand', e.target.innerText)}>
                                     {product.brand}
                                 </td>
-                                <td>{product.upc}</td>
+                                <td>{product.id}</td>
                                 <td contentEditable suppressContentEditableWarning
                                     onBlur={(e) => handleEdit(index, 'quantity', e.target.innerText)}>
                                     {product.quantity}
@@ -133,7 +133,7 @@ function Adquisicion() {
                                     {product.status}
                                 </td>
                                 <td>
-                                    <Link to={`/productos/editar/${product.upc}`}>
+                                    <Link to={`/productos/editar/${product.id}`}>
                                         <button className="Editar">Editar</button>
                                     </Link>{' '}
                                     <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>Eliminar</button>
@@ -152,7 +152,7 @@ function Adquisicion() {
                         <h3>¿Estás seguro de que deseas eliminar este producto adquirido?</h3>
                         <p><strong>Order ID:</strong> {productoAEliminar.order_id}</p>
                         <p><strong>Descripción:</strong> {productoAEliminar.description}</p>
-                        <p><strong>UPC:</strong> {productoAEliminar.upc}</p>
+                        <p><strong>ID:</strong> {productoAEliminar.id}</p>
                         <p><strong>Cantidad:</strong> {productoAEliminar.quantity}</p>
                         <p><strong>Status:</strong> {productoAEliminar.status}</p>
                         <p style={{ color: 'red' }}>¡Esta acción no se puede deshacer!</p>
