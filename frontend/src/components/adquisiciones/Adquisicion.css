@@ -160,36 +160,37 @@ input[type="number"] {
     border-radius: 5px;
     cursor: pointer;
 }
-/* Feedback Message */
-.feedback-message {
-  margin: 1em 0;
-  padding: 10px 16px;
-  border: 1px solid #c6f6d5;
-  background-color: #f0fff4;
-  color: #276749;
+/* --- BOTONES ESTILO SUNSET GRADIENT --- */
+.botones-container {
+  display: flex;
+  gap: 12px; /* separación entre botones */
+  margin-top: 16px;
+}
+
+.boton-estilo {
+  padding: 10px 22px;
+  border: none;
   border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  color: white;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
 }
 
-.pagination {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
+.boton-estilo:hover {
+  box-shadow: 0 6px 14px rgba(38, 115, 255, 0.5);
+  background: linear-gradient(135deg, #5a0ecb 0%, #1e62f0 100%);
 }
 
-.pagination button {
-    padding: 8px 12px;
-    margin: 0 5px;
-    border: 1px solid #ccc;
-    background-color: white;
-    cursor: pointer;
+.boton-guardar {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: #0a3d29;
 }
 
-.pagination button.active {
-    background-color: #007bff;
-    color: white;
-    border-color: #007bff;
-}
-
-.pagination button:hover:not(.active) {
-    background-color: #f0f0f0;
+.boton-guardar:hover {
+  background: linear-gradient(135deg, #3ad26e 0%, #2fd3bb 100%);
+  box-shadow: 0 6px 14px rgba(56, 249, 215, 0.5);
 }
