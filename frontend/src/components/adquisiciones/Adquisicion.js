@@ -7,6 +7,8 @@ function Adquisicion() {
     const [error, setError] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState(null);
     const [productoAEliminar, setProductoAEliminar] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
 
     useEffect(() => {
         fetchProducts();
@@ -56,7 +58,7 @@ function Adquisicion() {
     const eliminarProducto = async () => {
         if (!productoAEliminar) return;
 
-        const id = productoAEliminar.id;
+        const id = productoAEliminar.product_id;
 
         try {
             const response = await fetch(`http://localhost:8080/api/products/delete/${id}`, {
@@ -87,6 +89,17 @@ function Adquisicion() {
         }
     };
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
     return (
         <div>
             <div className="header-container">
@@ -98,50 +111,63 @@ function Adquisicion() {
 
             {feedbackMessage && <div className="feedback-message">{feedbackMessage}</div>}
 
-            {products.length > 0 ? (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order_id</th>
-                            <th>Descripción</th>
-                            <th>Marca</th>
-                            <th>id</th>
-                            <th>Quantity</th>
-                            <th>Status</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map((product, index) => (
-                            <tr key={`${product.order_id}-${product.id}`}>
-                                <td>{product.order_id}</td>
-                                <td contentEditable suppressContentEditableWarning
-                                    onBlur={(e) => handleEdit(index, 'description', e.target.innerText)}>
-                                    {product.description}
-                                </td>
-                                <td contentEditable suppressContentEditableWarning
-                                    onBlur={(e) => handleEdit(index, 'brand', e.target.innerText)}>
-                                    {product.brand}
-                                </td>
-                                <td>{product.id}</td>
-                                <td contentEditable suppressContentEditableWarning
-                                    onBlur={(e) => handleEdit(index, 'quantity', e.target.innerText)}>
-                                    {product.quantity}
-                                </td>
-                                <td contentEditable suppressContentEditableWarning
-                                    onBlur={(e) => handleEdit(index, 'status', e.target.innerText)}>
-                                    {product.status}
-                                </td>
-                                <td>
-                                    <Link to={`/productos/editar/${product.id}`}>
-                                        <button className="Editar">Editar</button>
-                                    </Link>{' '}
-                                    <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>Eliminar</button>
-                                </td>
+            {currentItems.length > 0 ? (
+                <>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order_id</th>
+                                <th>Descripción</th>
+                                <th>Marca</th>
+                                <th>id</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Opciones</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            {currentItems.map((product, index) => (
+                                <tr>
+                                    <td>{product.order_id}</td>
+                                    <td contentEditable suppressContentEditableWarning
+                                        onBlur={(e) => handleEdit(index, 'description', e.target.innerText)}>
+                                        {product.description}
+                                    </td>
+                                    <td contentEditable suppressContentEditableWarning
+                                        onBlur={(e) => handleEdit(index, 'brand', e.target.innerText)}>
+                                        {product.brand}
+                                    </td>
+                                    <td>{product.product_id}</td>
+                                    <td contentEditable suppressContentEditableWarning
+                                        onBlur={(e) => handleEdit(index, 'quantity', e.target.innerText)}>
+                                        {product.quantity}
+                                    </td>
+                                    <td contentEditable suppressContentEditableWarning
+                                        onBlur={(e) => handleEdit(index, 'status', e.target.innerText)}>
+                                        {product.status}
+                                    </td>
+                                    <td>
+                                        <Link to={`/productos/editar/${product.id}`}>
+                                            <button className="Editar">Editar</button>
+                                        </Link>{' '}
+                                        <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>Eliminar</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="pagination">
+                        {pageNumbers.map(number => (
+                            <button
+                                key={number}
+                                onClick={() => paginate(number)}
+                                className={currentPage === number ? 'active' : ''}
+                            >
+                                {number}
+                            </button>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                </>
             ) : (
                 <div>{error ? `Error: ${error}` : 'Cargando productos...'}</div>
             )}

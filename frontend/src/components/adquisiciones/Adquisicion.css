@@ -170,3 +170,26 @@ input[type="number"] {
   border-radius: 8px;
 }
 
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination button:hover:not(.active) {
+    background-color: #f0f0f0;
+}
