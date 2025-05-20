@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './NuevoAdquisicion.css';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 
 const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://localhost:8080/api/products/' }) => {
   const [data, setData] = useState(() => {
-    return initialData.length > 0 ? initialData : [{ descripcion: '', marca: '', cantidad: 1 }];
+    return initialData.length > 0
+      ? initialData.map((item) => ({ ...item, id: item.id || '' }))
+      : [{ id: '', descripcion: '', marca: '', cantidad: 1 }];
   });
   const [inputValue, setInputValue] = useState({});
   const [allProducts, setAllProducts] = useState([]);
@@ -14,17 +17,30 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   const [error, setError] = useState(null);
   const inputRefs = useRef({});
   const [editableRows, setEditableRows] = useState({});
+  const navigate = useNavigate(); // Hook para navegar
+
 
   const fetchProductDetails = async (description, index) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/adquisitions/search?description=${description}`);
+      const response = await fetch(
+        `http://localhost:8080/api/adquisitions/search?description=${description}`
+      );
       if (!response.ok) {
-        console.error(`Error al buscar producto con descripción "${description}": ${response.status}`);
+        console.error(
+          `Error al buscar producto con descripción "${description}": ${response.status}`
+        );
         return null;
       }
-      const data = await response.json();
-      if (data && data.length > 0 && data[0].brand) {
-        return { marca: data[0].brand };
+      const productData = await response.json();
+      if (productData && productData.length > 0 && productData[0].brand && productData[0].id) {
+        const newData = [...data];
+        newData[index].marca = productData[0].brand;
+        newData[index].id = productData[0].id;
+        setData(newData);
+      } else if (productData && productData.length > 0 && productData[0].brand) {
+        const newData = [...data];
+        newData[index].marca = productData[0].brand;
+        setData(newData);
       }
       return null;
     } catch (error) {
@@ -34,12 +50,7 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   };
 
   const autocompleteBrand = async (description, index) => {
-    const productDetails = await fetchProductDetails(description, index);
-    if (productDetails && productDetails.marca) {
-      const newData = [...data];
-      newData[index].marca = productDetails.marca;
-      setData(newData);
-    }
+    await fetchProductDetails(description, index);
   };
 
   useEffect(() => {
@@ -53,7 +64,7 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
         }
         const data = await response.json();
         if (data) {
-          setAllProducts(data.map(product => product.description));
+          setAllProducts(data.map((product) => product.description));
         } else {
           setAllProducts([]);
         }
@@ -76,8 +87,8 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   };
 
   const agregarFila = () => {
-    setData([...data, { descripcion: '', marca: '', cantidad: 1 }]);
-    setEditableRows(prev => ({ ...prev, [data.length]: true })); // La nueva fila es editable
+    setData([...data, { id: '', descripcion: '', marca: '', cantidad: 1 }]);
+    setEditableRows((prev) => ({ ...prev, [data.length]: true })); // La nueva fila es editable
   };
 
   const eliminarFila = (index) => {
@@ -103,40 +114,45 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
 
   const handleDescriptionInputChange = (index, event) => {
     const value = event.target.value;
-    setInputValue(prev => ({ ...prev, [index]: value }));
-    setShowSuggestions(prev => ({ ...prev, [index]: true }));
+    setInputValue((prev) => ({ ...prev, [index]: value }));
+    setShowSuggestions((prev) => ({ ...prev, [index]: true }));
 
     if (value.length >= 1) {
-      const filteredSuggestions = allProducts.filter(productDescription =>
+      const filteredSuggestions = allProducts.filter((productDescription) =>
         productDescription.toLowerCase().includes(value.toLowerCase())
       );
-      setSuggestions(prev => ({ ...prev, [index]: filteredSuggestions }));
+      setSuggestions((prev) => ({ ...prev, [index]: filteredSuggestions }));
 
       if (event.key === 'Enter' && filteredSuggestions.length === 1) {
         autocompleteBrand(filteredSuggestions[0], index);
-        setShowSuggestions(prev => ({ ...prev, [index]: false }));
-        setEditableRows(prev => ({ ...prev, [index]: false }));
+        setShowSuggestions((prev) => ({ ...prev, [index]: false }));
+        setEditableRows((prev) => ({ ...prev, [index]: false }));
       }
     } else {
-      setSuggestions(prev => ({ ...prev, [index]: [] }));
+      setSuggestions((prev) => ({ ...prev, [index]: [] }));
     }
   };
 
   const handleSuggestionClick = (index, suggestion) => {
-    setInputValue(prev => ({ ...prev, [index]: suggestion }));
+    setInputValue((prev) => ({ ...prev, [index]: suggestion }));
     handleInputChange(index, 'descripcion', suggestion);
     autocompleteBrand(suggestion, index);
-    setShowSuggestions(prev => ({ ...prev, [index]: false }));
-    setEditableRows(prev => ({ ...prev, [index]: false }));
+    setShowSuggestions((prev) => ({ ...prev, [index]: false }));
+    setEditableRows((prev) => ({ ...prev, [index]: false }));
   };
 
   const handleClickOutside = (event) => {
-    Object.keys(inputRefs.current).forEach(index => {
+    Object.keys(inputRefs.current).forEach((index) => {
       const input = inputRefs.current[index];
       const suggestionsContainerId = `suggestions-${index}`;
       const suggestionsContainer = document.getElementById(suggestionsContainerId);
-      if (input && suggestionsContainer && !input.contains(event.target) && !suggestionsContainer.contains(event.target)) {
-        setShowSuggestions(prev => ({ ...prev, [index]: false }));
+      if (
+        input &&
+        suggestionsContainer &&
+        !input.contains(event.target) &&
+        !suggestionsContainer.contains(event.target)
+      ) {
+        setShowSuggestions((prev) => ({ ...prev, [index]: false }));
       }
     });
   };
@@ -147,6 +163,46 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  const handleGuardar = async () => {
+    try {
+      // 1. Prepare the data
+      const postData = {
+        product_ids: data.map((item) => item.id).filter((id) => id !== ''), // Filter out empty IDs
+        quantities: data.map((item) => item.cantidad),
+      };
+
+      // Check if there are products to save
+      if (postData.product_ids.length === 0) {
+        alert('No hay productos para guardar.'); // Or use a better UI notification
+        return;
+      }
+
+      // 2. Send the data to the API
+      const response = await fetch('http://localhost:8080/api/adquisitions/new', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+
+      // 3. Handle the response
+      if (response.ok) {
+        alert('Adquisición guardada exitosamente.'); // Or use a better UI notification
+         navigate('/adquisiciones'); // Redirige a la página principal
+      } else {
+        const errorMessage = await response.text();
+        console.error('Error al guardar la adquisición:', errorMessage);
+        alert(`Error al guardar la adquisición: ${errorMessage}`); // Or use a better UI notification
+        setError(`Error al guardar la adquisición: ${errorMessage}`);
+      }
+    } catch (error) {
+      console.error('Error al enviar los datos:', error);
+      alert(`Error al enviar los datos: ${error.message}`); // Or use a better UI notification
+      setError(`Error al enviar los datos: ${error.message}`);
+    }
+  };
 
   if (loading) {
     return <p>Cargando datos...</p>;
@@ -162,11 +218,14 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
       <button onClick={agregarFila} className="agregar-fila-button espacio-derecha">
         Agregar Fila
       </button>
-      <button type="button" className="agregar-fila-button">Guardar</button>
+      <button type="button" className="agregar-fila-button" onClick={handleGuardar}>
+        Guardar
+      </button>
       <div className="table-container">
         <table className="editable-table">
           <thead>
             <tr>
+              <th className="editable-table th">ID</th>
               <th className="editable-table th">Descripción</th>
               <th className="editable-table th">Marca</th>
               <th className="editable-table th">Cantidad</th>
@@ -176,71 +235,94 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
+                <td className="editable-table td">{row.id}</td>
                 <td className="editable-table td">
                   <div className="autocomplete-container">
                     {editableRows[index] !== false ? (
                       <input
-                        ref={el => (inputRefs.current[index] = el)}
+                        ref={(el) => (inputRefs.current[index] = el)}
                         type="text"
                         className="editable-input"
                         value={inputValue[index] || row.descripcion}
                         onChange={(e) => handleDescriptionInputChange(index, e)}
                         onKeyDown={(e) => handleDescriptionInputChange(index, e)}
-                        onFocus={() => setShowSuggestions(prev => ({ ...prev, [index]: true }))}
+                        onFocus={() =>
+                          setShowSuggestions((prev) => ({ ...prev, [index]: true }))
+                        }
                       />
                     ) : (
-                      <span onClick={() => setEditableRows(prev => ({...prev, [index]: true}))} style={{cursor: 'pointer'}}>{row.descripcion}</span>
+                      <span
+                        onClick={() =>
+                          setEditableRows((prev) => ({ ...prev, [index]: true }))
+                        }
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {row.descripcion}
+                      </span>
                     )}
-                    {showSuggestions[index] && suggestions[index] && suggestions[index].length > 0 && (
-                      createPortal(
-                        <div
-                          id={`suggestions-${index}`}
-                          className="autocomplete-suggestions"
-                          style={{
-                            width: inputRefs.current[index] ? inputRefs.current[index].offsetWidth : 'auto',
-                            position: 'absolute',
-                            top: inputRefs.current[index] ? inputRefs.current[index].getBoundingClientRect().bottom + window.scrollY + 'px' : 'auto',
-                            left: inputRefs.current[index] ? inputRefs.current[index].getBoundingClientRect().left + window.scrollX + 'px' : 'auto',
-                          }}
-                        >
-                          <ul>
-                            {suggestions[index].map((suggestion, suggestionIndex) => (
-                              <li
-                                key={suggestionIndex}
-                                onClick={() => handleSuggestionClick(index, suggestion)}
-                              >
-                                {suggestion}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>,
-                        document.body
-                      )
-                    )}
+                    {showSuggestions[index] &&
+                      suggestions[index] &&
+                      suggestions[index].length > 0 && (
+                        createPortal(
+                          <div
+                            id={`suggestions-${index}`}
+                            className="autocomplete-suggestions"
+                            style={{
+                              width: inputRefs.current[index]
+                                ? inputRefs.current[index].offsetWidth
+                                : 'auto',
+                              position: 'absolute',
+                              top: inputRefs.current[index]
+                                ? inputRefs.current[index].getBoundingClientRect()
+                                    .bottom +
+                                  window.scrollY +
+                                  'px'
+                                : 'auto',
+                              left: inputRefs.current[index]
+                                ? inputRefs.current[index].getBoundingClientRect()
+                                    .left +
+                                  window.scrollX +
+                                  'px'
+                                : 'auto',
+                            }}
+                          >
+                            <ul>
+                              {suggestions[index].map((suggestion, suggestionIndex) => (
+                                <li
+                                  key={suggestionIndex}
+                                  onClick={() => handleSuggestionClick(index, suggestion)}
+                                >
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>,
+                          document.body
+                        )
+                      )}
                   </div>
                 </td>
                 <td className="editable-table td">
-                  {editableRows[index] !== false ? (
-                    <input
-                      type="text"
-                      className="editable-input"
-                      value={row.marca}
-                      onChange={(e) => handleInputChange(index, 'marca', e.target.value)}
-                    />
-                  ) : (
-                    <span>{row.marca}</span>
-                  )}
+                  <span>{row.marca}</span>
                 </td>
                 <td className="editable-table td">
                   <input
                     type="number"
                     className="editable-input editable-cantidad-input"
                     value={row.cantidad}
-                    onChange={(e) => handleInputChange(index, 'cantidad', parseInt(e.target.value))}
+                    onChange={(e) =>
+                      handleInputChange(
+                        index,
+                        'cantidad',
+                        parseInt(e.target.value)
+                      )
+                    }
                   />
                 </td>
                 <td className="editable-table td">
-                  <button type="button" onClick={() => eliminarFila(index)}>Eliminar</button>
+                  <button type="button" onClick={() => eliminarFila(index)}>
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
@@ -252,3 +334,4 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
 };
 
 export default EditableTableWithAutocomplete;
+

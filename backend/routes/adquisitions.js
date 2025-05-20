@@ -8,37 +8,6 @@ const supabase = require('../settings/db.js');
 
 const router = express.Router();
 
-router.post('/new', async (req, res) => {
-    const { upc, description, brand, unit_price } = req.body;
-
-    // Inserción en la tabla products
-    const { data, error } = await supabase
-        .from('products')
-        .insert([{ upc, description, brand, unit_price }]);
-
-    if (error) {
-        return res.status(400).json({ error: error.message });
-    }
-
-    res.status(201).json({ message: 'Producto agregado exitosamente', product: data });
-});
-
-// Example route to update the brand of a product
-router.put('/update/:upc', async (req, res) => {
-    const { error } = await supabase
-        .from('products')
-        .update({
-            description: req.body.description,
-            brand: req.body.brand,
-            unit_price: req.body.unit_price
-        })
-        .eq('upc', req.params.upc)
-    if (error) {
-        res.send(error);
-    }
-    res.send("updated!!");
-});
-
 // Endpoint para obtener productos
 router.get('/', async (req, res) => {
   console.log(); // Imprime un espacio en blanco
@@ -53,6 +22,27 @@ router.get('/', async (req, res) => {
   } else {
     console.log('Productos adquiridos:', data);
     return res.status(200).json(data); // Retorna los registros obtenidos con un estado 200
+  }
+});
+
+router.post('/new', async (req, res) => {
+  const { product_ids, quantities } = req.body;
+
+  try {
+    const { data, error } = await supabase
+      .rpc('insert_order_and_acquisition', {
+        p_product_ids: product_ids,
+        p_quantities: quantities,
+      });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(201).json({ message: 'Orden y adquisición insertadas exitosamente', result: data });
+  } catch (error) {
+    console.error('Error al llamar a la función insert_order_and_acquisition:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
@@ -116,7 +106,7 @@ router.get('/search', async (req, res) => {
 
     const { data, error } = await supabase
         .from('products')
-        .select('brand')
+        .select('id, brand')
         .ilike('description', `%${description}%`); // Utiliza ilike para buscar insensiblemente
 
     if (error) {
