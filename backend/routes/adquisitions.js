@@ -140,6 +140,27 @@ router.get('/search', async (req, res) => {
     res.status(200).json(data);
 });
 
+router.post('/status', async (req, res) => {
+  const { order_id, new_status } = req.body;
+
+  console.log('Cuerpo completo de la solicitud (req.body):', req.body);
+
+  try {
+    const { data, error } = await supabase.rpc('update_order_status', {
+        p_order_id: order_id, // Coincide con p_order_id en SQL
+        p_new_status: new_status // Coincide con p_new_status en SQL
+    }); 
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: 'Estado del pedido actualizado exitosamente', result: data });
+  } catch (error) {
+    console.error('Error al llamar a la función update_order_status:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Exporta el router usando CommonJS
 module.exports = router;
 //export default router;

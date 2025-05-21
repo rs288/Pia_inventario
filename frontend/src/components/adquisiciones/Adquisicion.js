@@ -9,6 +9,7 @@ function Adquisicion() {
     const [productoAEliminar, setProductoAEliminar] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
+    const statusOptions = ['Pendiente', 'Confirmado', 'Completo', 'Cancelado'];
 
     useEffect(() => {
         fetchProducts();
@@ -27,33 +28,38 @@ function Adquisicion() {
             setError(error.message);
         }
     };
-
+    
     const handleEdit = async (index, field, value) => {
-        const updatedProducts = [...products];
-        updatedProducts[index][field] = value;
-        setProducts(updatedProducts);
+    const updatedProducts = [...products];
+    updatedProducts[index][field] = value;
+    setProducts(updatedProducts);
 
-        try {
-            const response = await fetch(`http://localhost:8080/api/products/update/${updatedProducts[index].id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedProducts[index]),
-            });
+    try {
+        const response = await fetch('http://localhost:8080/api/adquisitions/status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                order_id: updatedProducts[index].order_id,
+                new_status: value
+            }),
+        });
 
-            if (!response.ok) {
-                throw new Error('Error al actualizar en el servidor');
-            }
-
-            setFeedbackMessage('Producto actualizado correctamente');
-            setTimeout(() => setFeedbackMessage(null), 3000);
-        } catch (error) {
-            console.error('Error al actualizar el producto:', error);
-            setFeedbackMessage('Error al actualizar el producto');
-            setTimeout(() => setFeedbackMessage(null), 3000);
+        if (!response.ok) {
+            throw new Error('Error al actualizar el estado en el servidor');
         }
-    };
+
+        setFeedbackMessage('Estado del pedido actualizado correctamente');
+        setTimeout(() => setFeedbackMessage(null), 3000);
+        // Recargar la lista de productos después de una actualización exitosa
+        fetchProducts();
+    } catch (error) {
+        console.error('Error al actualizar el estado del pedido:', error);
+        setFeedbackMessage('Error al actualizar el estado del pedido');
+        setTimeout(() => setFeedbackMessage(null), 3000);
+    }
+};
 
     const eliminarProducto = async () => {
         if (!productoAEliminar) return;
@@ -128,24 +134,22 @@ function Adquisicion() {
                         </thead>
                         <tbody>
                             {currentItems.map((product, index) => (
-                                <tr>
+                                <tr key={product.ac_id}>
                                     <td>{product.ac_id}</td>
                                     <td>{product.order_id}</td>
-                                    <td contentEditable suppressContentEditableWarning
-                                        onBlur={(e) => handleEdit(index, 'description', e.target.innerText)}>
-                                        {product.description}
-                                    </td>
-                                    <td contentEditable suppressContentEditableWarning
-                                        onBlur={(e) => handleEdit(index, 'brand', e.target.innerText)}>
-                                        {product.brand}
-                                    </td>
-                                    <td contentEditable suppressContentEditableWarning
-                                        onBlur={(e) => handleEdit(index, 'quantity', e.target.innerText)}>
-                                        {product.quantity}
-                                    </td>
-                                    <td contentEditable suppressContentEditableWarning
-                                        onBlur={(e) => handleEdit(index, 'status', e.target.innerText)}>
-                                        {product.status}
+                                    <td>{product.description}</td>
+                                    <td>{product.brand}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>
+                                        <select
+                                            value={product.status}
+                                            onChange={(e) => handleEdit(index, 'status', e.target.value)}>
+                                            {statusOptions.map((option) => (
+                                                <option key={option} value={option}>
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </td>
                                     <td>
                                         <Link to={`/adquisiciones/editar/${product.order_id}`}>
