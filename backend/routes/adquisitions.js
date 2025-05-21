@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   console.log(); // Imprime un espacio en blanco
   console.log('Solicitud recibida en /api/adquisitions');
   const { data, error } = await supabase
-        .from('adquisitions_view')
+        .from('adquisitions_view2')
         .select('*');// Selecciona todos los registros de la vista 'adquisitions'
 
   if (error) {
@@ -47,54 +47,77 @@ router.post('/new', async (req, res) => {
 });
 
 // Endpoint para obtener un producto
-router.get('/upc/:upc', async (req, res) => {
+router.get('/order_id/:order_id', async (req, res) => {
   console.log(); // Imprime un espacio en blanco
-  console.log('Solicitud recibida en /api/products/upc/:upc');
-  const { upc } = req.params; // Obtiene el valor del parámetro 'upc' de la URL
-  console.log('Buscando producto con UPC:', upc);
+  console.log('Solicitud recibida en /api/adquisitions/order_id/:order_id');
+  const { order_id } = req.params; // Obtiene el valor del parámetro 'upc' de la URL
+  console.log('Buscando producto con UPC:', order_id);
 
   const { data, error } = await supabase
-    .from('products')
+    .from('adquisitions_view2')
     .select() // Selecciona todas las columnas
-    .eq('upc', upc) // Filtra los registros donde la columna 'upc' sea igual al valor recibido
-    .single(); // Espera un solo resultado (ya que el UPC debería ser único)
+    .eq('order_id', order_id) // Filtra los registros donde la columna 'order_id' sea igual al valor recibido
+    //.single(); // Espera un solo resultado (ya que el order_id debería ser único)
 
   if (error) {
-    console.error('Error al obtener el producto:', error.message);
-    return res.status(500).json({ error: 'Error al obtener el producto' }); // Retorna un error 500
+    console.error('Error al obtener los productos adquiridos:', error.message);
+    return res.status(500).json({ error: 'Error al obtener los productos adquiridos' }); // Retorna un error 500
   } else if (data) {
-    console.log('Producto obtenido:', data);
+    console.log('Productos adquiridos:', data);
     return res.status(200).json(data); // Retorna el producto encontrado con un estado 200
   } else {
-    console.log('No se encontró ningún producto con el UPC:', upc);
+    console.log('No se encontró ningún producto con el order_id:', order_id);
     return res.status(404).json({ message: 'Producto no encontrado' }); // Retorna un error 404 si no se encuentra el producto
   }
 });
 
-// Endpoint para eliminar un producto por UPC
-router.delete('/delete/:upc', async (req, res) => {
-        const { upc } = req.params; // Obtener el UPC de los parámetros de la ruta
+router.post('/update', async (req, res) => {
+  const { ids, quantities, product_ids } = req.body;
+  
+  console.log('Cuerpo completo de la solicitud (req.body):', req.body);
 
-        if (!upc) {
-            return res.status(400).json({ error: 'El campo "upc" es requerido.' });
-        }
-
-        try {
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .eq('upc', upc); // Usamos 'upc' como columna para la comparación
-
-            if (error) {
-                return res.status(400).json({ error: error.message });
-            }
-
-            res.status(200).json({ message: 'Producto eliminado con éxito' });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: 'Error al eliminar el producto' });
-        }
+  try {
+    const { data, error } = await supabase.rpc('update_acquisitions', {
+      p_ids: ids,
+      p_quantities: quantities,
+      p_product_ids: product_ids
     });
+
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: 'Adquisiciones actualizadas exitosamente', result: data });
+  } catch (error) {
+    console.error('Error al llamar a la función update_acquisitions:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Endpoint para eliminar una adquisición y orden por ID
+router.delete('/delete/:p_acquisition_id', async (req, res) => {
+    const { p_acquisition_id } = req.params; // Obtener el ID de los parámetros de la ruta
+
+    if (!p_acquisition_id) {
+        return res.status(400).json({ error: 'El campo "p_acquisition_id" es requerido.' });
+    }
+
+    try {
+        // Llamar a la función delete_acquisition_and_order_dynamic_order_id
+        const { error } = await supabase
+            .rpc('delete_acquisition_and_order_dynamic_order_id', { p_acquisition_id });
+
+        if (error) {
+            return res.status(400).json({ error: error.message });
+        }
+
+        res.status(200).json({ message: 'Adquisición y orden eliminados con éxito' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error al eliminar la adquisición y orden' });
+    }
+});
+
 
 // Ruta para obtener un producto por descripción
 router.get('/search', async (req, res) => {

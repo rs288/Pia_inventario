@@ -194,3 +194,15 @@ input[type="number"] {
   background: linear-gradient(135deg, #3ad26e 0%, #2fd3bb 100%);
   box-shadow: 0 6px 14px rgba(56, 249, 215, 0.5);
 }
+
+/* --- BOTONES ESTILO SUNSET GRADIENT --- */
+
+
+.botones-container {
+  display: flex;
+  justify-content: center; /* Centers items horizontally */
+  align-items: center; 
+  gap: 12px; /* separación entre botones */
+  margin-top: 16px;
+  margin-bottom: 16px;
+  }
