@@ -69,7 +69,7 @@
 
         .new-product-form button:nth-child(2) {
             /*background-color: #dc3545;*/
-            color: black;
+            color: white;
         }
 
             .new-product-form button:nth-child(2):hover {

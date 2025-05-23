@@ -12,6 +12,7 @@ import Ventas from './components/ventas/Venta';
 import NuevoVenta from './components/ventas/NuevoVenta';
 import EditarVenta from './components/ventas/EditarVenta';
 import Inventario from './components/reportes/Inventario';
+import Valor from './components/reportes/Valor';
 
 const App = () => {
     return (
@@ -32,7 +33,7 @@ const App = () => {
                         <Route path="/ventas/nuevo" element={<NuevoVenta />} />
                         <Route path="/ventas/editar/:order_id" element={<EditarVenta />} />
                         <Route path="/inventario" element={<Inventario />} />
-                        <Route path="/ValorInventario" element={<p>Esta es la p&aacute;gina del valor de inventario.</p>} />
+                        <Route path="/ValorInventario" element={<Valor />} />
                     </Routes>
                 </div>
             </div>

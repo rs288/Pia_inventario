@@ -140,7 +140,7 @@ function EditarProducto() {
                 />
             </div>
             <div className="button-container">
-                <button type="submit" className="full-width-button">Guardar Cambios</button>
+                <button type="submit" className="full-width-button nuevo">Guardar Cambios</button>
                 <button type="button" className="full-width-button" onClick={handleCancel}>Cancelar</button>
             </div>
         </form>

@@ -6,6 +6,7 @@ const productsRouter = require('../routes/products.js');
 const adquisitionsRouter = require('../routes/adquisitions.js');
 const outputsRouter = require('../routes/outputs.js');
 const inventoryRouter = require('../routes/inventory.js');
+const valueRouter = require('../routes/value.js')
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/adquisitions', adquisitionsRouter);
 app.use('/api/outputs', outputsRouter);
 app.use('/api/inventory', inventoryRouter);
+app.use('/api/value', valueRouter);
 
 // Inicia el servidor
 app.listen(PORT, () => {

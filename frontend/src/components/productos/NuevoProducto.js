@@ -112,7 +112,7 @@ function FormularioNuevoProducto() {
                 />
             </label>
             <div className="button-container">
-                <button className="full-width-button" onClick={handleSaveNewProduct}>Guardar</button>
+                <button className="full-width-button nuevo" onClick={handleSaveNewProduct}>Guardar</button>
                 <button className="full-width-button" onClick={handleCancelAdd}>Cancelar</button>
             </div>
         </div>
