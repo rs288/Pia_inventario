@@ -1,4 +1,4 @@
-import './Venta.css';
+ï»¿import './Venta.css';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -7,6 +7,8 @@ function Venta() {
     const [error, setError] = useState(null);
     const [feedbackMessage, setFeedbackMessage] = useState(null);
     const [productoAEliminar, setProductoAEliminar] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5);
 
     useEffect(() => {
         fetchProducts();
@@ -15,7 +17,9 @@ function Venta() {
     const fetchProducts = async () => {
         try {
             const response = await fetch('http://localhost:8080/api/outputs');
-            if (!response.ok) throw new Error('Error en la red');
+            if (!response.ok) {
+                throw new Error('Error en la red');
+            }
             const data = await response.json();
             setProducts(data);
         } catch (error) {
@@ -26,10 +30,12 @@ function Venta() {
 
     const eliminarProducto = async () => {
         if (!productoAEliminar) return;
-        const upc = productoAEliminar.upc;
+
+        const id = productoAEliminar.ac_id;
+         console.error(id);
 
         try {
-            const response = await fetch(`http://localhost:8080/api/products/delete/${upc}`, {
+            const response = await fetch(`http://localhost:8080/api/outputs/delete/${id}`, {
                 method: 'DELETE',
             });
 
@@ -39,86 +45,105 @@ function Venta() {
                 fetchProducts();
             } else if (response.status === 404) {
                 const errorData = await response.json();
-                mensaje = errorData.message || `No se encontró el producto con UPC ${upc}`;
+                mensaje = errorData.message || `No se encontrÃ³ el producto adquirido con ID ${id}`;
             } else {
                 const errorData = await response.json();
-                mensaje = errorData.error || `Error al eliminar el producto con UPC ${upc}`;
+                mensaje = errorData.error || `Error al eliminar el producto adquirido ID ${id}`;
             }
 
             setFeedbackMessage(mensaje);
             setTimeout(() => setFeedbackMessage(null), 3000);
         } catch (error) {
-            const mensaje = `Error al eliminar el producto con UPC ${upc}: ${error.message}`;
+            const mensaje = `Error al eliminar el producto vendido ID ${id}: ${error.message}`;
             setFeedbackMessage(mensaje);
-            console.error('Hubo un problema al eliminar el producto:', error);
+            console.error('Hubo un problema al eliminar el producto adquirido:', error);
             setTimeout(() => setFeedbackMessage(null), 3000);
         } finally {
             setProductoAEliminar(null);
         }
     };
 
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(products.length / itemsPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
     return (
         <div>
             <div className="header-container">
-                <h2 style={{ display: 'inline', marginRight: '17em' }}>Lista de Productos Vendidos</h2>
-                <Link to="/productos/nuevo">
-                    <button className="nuevo"> <i className="fa-solid fa-plus"></i> Nuevo Producto</button>
+                <h2 style={{ display: 'inline', marginRight: '16em' }}>Lista de Productos Vendido</h2>
+                <Link to="/adquisiciones/nuevo">
+                    <button className="nuevo"><i className="fa-solid fa-plus"></i> Nuevo Producto vendido</button>
                 </Link>
             </div>
 
-            {products.length > 0 ? (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID Venta</th>
-                            <th>Descripción</th>
-                            <th>Marca</th>
-                            <th>Cantidad</th>
-                            <th>UPC</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {products.map(product => (
-                            <tr key={product.upc}>
-                                <td>{product.output_id}</td>
-                                <td>{product.description}</td>
-                                <td>{product.brand}</td>
-                                <td>{product.quantity}</td>
-                                <td>{product.upc}</td>
-                                <td>
-                                    <Link to={`/productos/editar/${product.upc}`}>
-                                        <button className="Editar">Editar</button>
-                                    </Link>{' '}
-                                    <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>
-                                        Eliminar
-                                    </button>
-                                </td>
+            {feedbackMessage && <div className="feedback-message">{feedbackMessage}</div>}
+
+            {currentItems.length > 0 ? (
+                <>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ac_id</th>
+                                <th>Order_id</th>
+                                <th>DescripciÃ³n</th>
+                                <th>Marca</th>
+                                <th>Quantity</th>
+                                <th>Opciones</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            {currentItems.map((product) => ( // Eliminamos 'index' aquÃ­
+                                <tr key={product.ac_id}>
+                                    <td>{product.ac_id}</td>
+                                    <td>{product.order_id}</td>
+                                    <td>{product.description}</td>
+                                    <td>{product.brand}</td>
+                                    <td>{product.quantity}</td>
+                                    <td>
+                                        <Link to={`/ventas/editar/${product.order_id}`}>
+                                            <button className="Editar">Editar</button>
+                                        </Link>{' '}
+                                        <button className="Eliminar" onClick={() => setProductoAEliminar(product)}>Eliminar</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="pagination">
+                        {pageNumbers.map(number => (
+                            <button
+                                key={number}
+                                onClick={() => paginate(number)}
+                                className={currentPage === number ? 'active' : ''}
+                            >
+                                {number}
+                            </button>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                </>
             ) : (
-                <div>{error ? `Error: ${error}` : 'Cargando productos vendidos...'}</div>
+                <div>{error ? `Error: ${error}` : 'Cargando productos...'}</div>
             )}
 
-            {/* Modal de confirmación */}
             {productoAEliminar && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <h3>¿Estás seguro de que deseas eliminar este producto adquirido?</h3>
-
+                        <h3>Â¿EstÃ¡s seguro de que deseas eliminar este producto vendido?</h3>
                         <p><strong>Order ID:</strong> {productoAEliminar.order_id}</p>
-                        <p><strong>Descripción:</strong> {productoAEliminar.description}</p>
-                        <p><strong>UPC:</strong> {productoAEliminar.upc}</p>
+                        <p><strong>DescripciÃ³n:</strong> {productoAEliminar.description}</p>
+                        <p><strong>ID:</strong> {productoAEliminar.ac_id}</p>
                         <p><strong>Cantidad:</strong> {productoAEliminar.quantity}</p>
-                        <p><strong>Status:</strong> {productoAEliminar.status}</p>
-
-                        <p style={{ color: 'red' }}>¡Esta acción no se puede deshacer!</p>
-
+                        <p style={{ color: 'red' }}>Â¡Esta acciÃ³n no se puede deshacer!</p>
                         <div className="modal-actions">
                             <button onClick={eliminarProducto} className="delete-btn" style={{ marginRight: '1em' }}>
-                                Sí, eliminar
+                                SÃ­, eliminar
                             </button>
                             <button onClick={() => setProductoAEliminar(null)} className="cancel-btn">
                                 Cancelar
@@ -131,7 +156,4 @@ function Venta() {
     );
 }
 
-
 export default Venta;
-
-

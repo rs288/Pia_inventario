@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './NuevoAdquisiciones.css';
 import { createPortal } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -78,9 +77,9 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
         setLoading(true);
         setError(null);
         try {
-          const response = await fetch(`http://localhost:8080/api/adquisitions/order_id/${order_id}`);
+          const response = await fetch(`http://localhost:8080/api/outputs/order_id/${order_id}`);
           if (!response.ok) {
-            throw new Error(`Error al cargar la adquisición: ${response.statusText}`);
+            throw new Error(`Error al cargar la venta: ${response.statusText}`);
           }
           const adquisitionData = await response.json();
           if (adquisitionData && adquisitionData.length > 0) {
@@ -98,8 +97,8 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
             setData([{ ac_id: '', product_id: '', descripcion: '', marca: '', cantidad: 1 }]);
           }
         } catch (e) {
-          console.error('Error al cargar los detalles de la adquisición:', e);
-          setError(`Error al cargar los detalles de la adquisición: ${e.message}`);
+          console.error('Error al cargar los detalles de la venta:', e);
+          setError(`Error al cargar los detalles de la venta: ${e.message}`);
         } finally {
           setLoading(false);
         }
@@ -211,7 +210,7 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
 
       console.log('Enviando datos:', requestBody);
 
-      const response = await fetch('http://localhost:8080/api/adquisitions/update', {
+      const response = await fetch('http://localhost:8080/api/outputs/update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -228,7 +227,8 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
       console.log('Datos guardados exitosamente:', result);
       alert('Datos guardados exitosamente!');
       // Opcional: Redirigir a otra página o actualizar la tabla
-      navigate('/adquisiciones');
+      // navigate('/ruta-de-confirmacion');
+
     } catch (error) {
       console.error('Hubo un error al intentar guardar los datos:', error);
       alert(`Error al guardar los datos: ${error.message}`);

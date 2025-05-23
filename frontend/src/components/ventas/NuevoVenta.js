@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './NuevoAdquisiciones.css';
 import { createPortal } from 'react-dom';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 
 const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://localhost:8080/api/products/' }) => {
   const [data, setData] = useState(() => {
     return initialData.length > 0
-      ? initialData.map((item) => ({ ...item, product_id: item.product_id || '' }))
-      : [{ product_id: '', descripcion: '', marca: '', cantidad: 1 }];
+      ? initialData.map((item) => ({ ...item, id: item.id || '' }))
+      : [{ id: '', descripcion: '', marca: '', cantidad: 1 }];
   });
   const [inputValue, setInputValue] = useState({});
   const [allProducts, setAllProducts] = useState([]);
@@ -17,10 +16,10 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   const [error, setError] = useState(null);
   const inputRefs = useRef({});
   const [editableRows, setEditableRows] = useState({});
-  const navigate = useNavigate();
-  const { order_id } = useParams();
+  const navigate = useNavigate(); // Hook para navegar
 
-  const fetchProductDetails = async (description) => {
+
+  const fetchProductDetails = async (description, index) => {
     try {
       const response = await fetch(
         `http://localhost:8080/api/adquisitions/search?description=${description}`
@@ -32,17 +31,25 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
         return null;
       }
       const productData = await response.json();
-      if (productData && productData.length > 0) {
-        return {
-          marca: productData[0].brand,
-          product_id: productData[0].id || productData[0].product_id
-        };
+      if (productData && productData.length > 0 && productData[0].brand && productData[0].id) {
+        const newData = [...data];
+        newData[index].marca = productData[0].brand;
+        newData[index].id = productData[0].id;
+        setData(newData);
+      } else if (productData && productData.length > 0 && productData[0].brand) {
+        const newData = [...data];
+        newData[index].marca = productData[0].brand;
+        setData(newData);
       }
       return null;
     } catch (error) {
       console.error('Error al buscar detalles del producto:', error);
       return null;
     }
+  };
+
+  const autocompleteBrand = async (description, index) => {
+    await fetchProductDetails(description, index);
   };
 
   useEffect(() => {
@@ -72,43 +79,6 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
     fetchProducts();
   }, [apiUrl]);
 
-  useEffect(() => {
-    const fetchAdquisitionDetails = async () => {
-      if (order_id) {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await fetch(`http://localhost:8080/api/adquisitions/order_id/${order_id}`);
-          if (!response.ok) {
-            throw new Error(`Error al cargar la adquisición: ${response.statusText}`);
-          }
-          const adquisitionData = await response.json();
-          if (adquisitionData && adquisitionData.length > 0) {
-            setData(adquisitionData.map(item => ({
-              ac_id: item.ac_id,
-              product_id: item.product_id,
-              descripcion: item.description,
-              marca: item.brand,
-              cantidad: item.quantity
-            })));
-            const initialEditableState = {};
-            adquisitionData.forEach((_, idx) => initialEditableState[idx] = false);
-            setEditableRows(initialEditableState);
-          } else {
-            setData([{ ac_id: '', product_id: '', descripcion: '', marca: '', cantidad: 1 }]);
-          }
-        } catch (e) {
-          console.error('Error al cargar los detalles de la adquisición:', e);
-          setError(`Error al cargar los detalles de la adquisición: ${e.message}`);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchAdquisitionDetails();
-  }, [order_id]);
-
   const handleInputChange = (index, column, value) => {
     const newData = [...data];
     newData[index][column] = value;
@@ -116,14 +86,34 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   };
 
   const agregarFila = () => {
-    setData([...data, { product_id: '', descripcion: '', marca: '', cantidad: 1 }]);
-    setEditableRows((prev) => ({ ...prev, [data.length]: true }));
+    setData([...data, { id: '', descripcion: '', marca: '', cantidad: 1 }]);
+    setEditableRows((prev) => ({ ...prev, [data.length]: true })); // La nueva fila es editable
   };
 
-  const handleDescriptionInputChange = async (index, event) => {
+  const eliminarFila = (index) => {
+    const newData = data.filter((_, i) => i !== index);
+    setData(newData);
+
+    const newEditableRows = { ...editableRows };
+    delete newEditableRows[index]; // Elimina la entrada del estado de edición
+    setEditableRows(newEditableRows);
+
+    const newInputValues = { ...inputValue };
+    delete newInputValues[index];
+    setInputValue(newInputValues);
+
+    const newSuggestions = { ...suggestions };
+    delete newSuggestions[index];
+    setSuggestions(newSuggestions);
+
+    const newShowSuggestions = { ...showSuggestions };
+    delete newShowSuggestions[index];
+    setShowSuggestions(newShowSuggestions);
+  };
+
+  const handleDescriptionInputChange = (index, event) => {
     const value = event.target.value;
     setInputValue((prev) => ({ ...prev, [index]: value }));
-    handleInputChange(index, 'descripcion', value);
     setShowSuggestions((prev) => ({ ...prev, [index]: true }));
 
     if (value.length >= 1) {
@@ -133,42 +123,19 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
       setSuggestions((prev) => ({ ...prev, [index]: filteredSuggestions }));
 
       if (event.key === 'Enter' && filteredSuggestions.length === 1) {
-        const descriptionToUse = filteredSuggestions[0];
-        setInputValue((prev) => ({ ...prev, [index]: descriptionToUse }));
-        handleInputChange(index, 'descripcion', descriptionToUse);
-
-        const productDetails = await fetchProductDetails(descriptionToUse);
-        if (productDetails) {
-          handleInputChange(index, 'marca', productDetails.marca);
-          handleInputChange(index, 'product_id', productDetails.product_id);
-        } else {
-          handleInputChange(index, 'marca', '');
-          handleInputChange(index, 'product_id', '');
-        }
-
+        autocompleteBrand(filteredSuggestions[0], index);
         setShowSuggestions((prev) => ({ ...prev, [index]: false }));
         setEditableRows((prev) => ({ ...prev, [index]: false }));
       }
     } else {
       setSuggestions((prev) => ({ ...prev, [index]: [] }));
-      handleInputChange(index, 'marca', '');
-      handleInputChange(index, 'product_id', '');
     }
   };
 
-  const handleSuggestionClick = async (index, suggestion) => {
+  const handleSuggestionClick = (index, suggestion) => {
     setInputValue((prev) => ({ ...prev, [index]: suggestion }));
     handleInputChange(index, 'descripcion', suggestion);
-
-    const productDetails = await fetchProductDetails(suggestion);
-    if (productDetails) {
-      handleInputChange(index, 'marca', productDetails.marca);
-      handleInputChange(index, 'product_id', productDetails.product_id);
-    } else {
-      handleInputChange(index, 'marca', '');
-      handleInputChange(index, 'product_id', '');
-    }
-
+    autocompleteBrand(suggestion, index);
     setShowSuggestions((prev) => ({ ...prev, [index]: false }));
     setEditableRows((prev) => ({ ...prev, [index]: false }));
   };
@@ -196,45 +163,45 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
     };
   }, []);
 
-  // --- Función handleGuardar ---
   const handleGuardar = async () => {
     try {
-      const ids = data.map(item => item.ac_id).filter(id => id !== '' && id !== undefined && id !== null); // Filtra los IDs vacíos o nulos
-      const quantities = data.map(item => item.cantidad);
-      const product_ids = data.map(item => item.product_id);
-
-      const requestBody = {
-        ids: ids,
-        quantities: quantities,
-        product_ids: product_ids
+      // 1. Prepare the data
+      const postData = {
+        product_ids: data.map((item) => item.id).filter((id) => id !== ''), // Filter out empty IDs
+        quantities: data.map((item) => item.cantidad),
       };
 
-      console.log('Enviando datos:', requestBody);
+      // Check if there are products to save
+      if (postData.product_ids.length === 0) {
+        alert('No hay productos para guardar.'); // Or use a better UI notification
+        return;
+      }
 
-      const response = await fetch('http://localhost:8080/api/adquisitions/update', {
+      // 2. Send the data to the API
+      const response = await fetch('http://localhost:8080/api/outputs/new', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(postData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Error al guardar los datos: ${response.statusText} - ${errorData.message || ''}`);
+      // 3. Handle the response
+      if (response.ok) {
+        alert('Ventas guardada exitosamente.'); // Or use a better UI notification
+         navigate('/ventas'); // Redirige a la página principal
+      } else {
+        const errorMessage = await response.text();
+        console.error('Error al guardar la ventas:', errorMessage);
+        alert(`Error al guardar la venta: ${errorMessage}`); // Or use a better UI notification
+        setError(`Error al guardar la venta: ${errorMessage}`);
       }
-
-      const result = await response.json();
-      console.log('Datos guardados exitosamente:', result);
-      alert('Datos guardados exitosamente!');
-      // Opcional: Redirigir a otra página o actualizar la tabla
-      navigate('/adquisiciones');
     } catch (error) {
-      console.error('Hubo un error al intentar guardar los datos:', error);
-      alert(`Error al guardar los datos: ${error.message}`);
+      console.error('Error al enviar los datos:', error);
+      alert(`Error al enviar los datos: ${error.message}`); // Or use a better UI notification
+      setError(`Error al enviar los datos: ${error.message}`);
     }
   };
-  // --- Fin Función handleGuardar ---
 
   if (loading) {
     return <p>Cargando datos...</p>;
@@ -247,26 +214,27 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
   return (
     <div>
       <h2>Lista de productos por adquirir</h2>
-      <div className="botones-container">
-        <button className="nuevo" onClick={handleGuardar}>Guardar</button>
-      </div>
+          <div className="botones-container">
+              <button className="nuevo espacio-derecha" onClick={agregarFila}>Agregar Fila</button>
+              <button className="nuevo" onClick={handleGuardar}>Guardar</button> 
+          </div>
+        
 
       <div className="table-container">
         <table className="editable-table">
           <thead>
             <tr>
-              <th className="editable-table th">Ac ID</th>
-              <th className="editable-table th">Product ID</th>
+              <th className="editable-table th">ID</th>
               <th className="editable-table th">Descripción</th>
               <th className="editable-table th">Marca</th>
               <th className="editable-table th">Cantidad</th>
+              <th className="editable-table th">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="editable-table td">{row.ac_id}</td>
-                <td className="editable-table td">{row.product_id}</td>
+                <td className="editable-table td">{row.id}</td>
                 <td className="editable-table td">
                   <div className="autocomplete-container">
                     {editableRows[index] !== false ? (
@@ -293,40 +261,43 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
                     )}
                     {showSuggestions[index] &&
                       suggestions[index] &&
-                      suggestions[index].length > 0 &&
-                      createPortal(
-                        <div
-                          id={`suggestions-${index}`}
-                          className="autocomplete-suggestions"
-                          style={{
-                            width: inputRefs.current[index]
-                              ? inputRefs.current[index].offsetWidth
-                              : 'auto',
-                            position: 'absolute',
-                            top: inputRefs.current[index]
-                              ? inputRefs.current[index].getBoundingClientRect().bottom +
-                                window.scrollY +
-                                'px'
-                              : 'auto',
-                            left: inputRefs.current[index]
-                              ? inputRefs.current[index].getBoundingClientRect().left +
-                                window.scrollX +
-                                'px'
-                              : 'auto',
-                          }}
-                        >
-                          <ul>
-                            {suggestions[index].map((suggestion, suggestionIndex) => (
-                              <li
-                                key={suggestionIndex}
-                                onClick={() => handleSuggestionClick(index, suggestion)}
-                              >
-                                {suggestion}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>,
-                        document.body
+                      suggestions[index].length > 0 && (
+                        createPortal(
+                          <div
+                            id={`suggestions-${index}`}
+                            className="autocomplete-suggestions"
+                            style={{
+                              width: inputRefs.current[index]
+                                ? inputRefs.current[index].offsetWidth
+                                : 'auto',
+                              position: 'absolute',
+                              top: inputRefs.current[index]
+                                ? inputRefs.current[index].getBoundingClientRect()
+                                    .bottom +
+                                  window.scrollY +
+                                  'px'
+                                : 'auto',
+                              left: inputRefs.current[index]
+                                ? inputRefs.current[index].getBoundingClientRect()
+                                    .left +
+                                  window.scrollX +
+                                  'px'
+                                : 'auto',
+                            }}
+                          >
+                            <ul>
+                              {suggestions[index].map((suggestion, suggestionIndex) => (
+                                <li
+                                  key={suggestionIndex}
+                                  onClick={() => handleSuggestionClick(index, suggestion)}
+                                >
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>,
+                          document.body
+                        )
                       )}
                   </div>
                 </td>
@@ -347,6 +318,11 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
                     }
                   />
                 </td>
+                <td className="editable-table td">
+                  <button type="button" onClick={() => eliminarFila(index)}>
+                    Eliminar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -357,3 +333,4 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
 };
 
 export default EditableTableWithAutocomplete;
+

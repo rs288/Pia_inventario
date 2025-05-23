@@ -28,38 +28,46 @@ function Adquisicion() {
             setError(error.message);
         }
     };
-    
-    const handleEdit = async (index, field, value) => {
-    const updatedProducts = [...products];
-    updatedProducts[index][field] = value;
-    setProducts(updatedProducts);
 
-    try {
-        const response = await fetch('http://localhost:8080/api/adquisitions/status', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                order_id: updatedProducts[index].order_id,
-                new_status: value
-            }),
-        });
+    // Modificación aquí: La función ahora recibe el 'product' completo
+    const handleEdit = async (productToEdit, field, value) => {
+        // Encontrar el índice global del producto a editar
+        const globalIndex = products.findIndex(p => p.ac_id === productToEdit.ac_id);
 
-        if (!response.ok) {
-            throw new Error('Error al actualizar el estado en el servidor');
+        if (globalIndex === -1) {
+            console.error('Producto no encontrado para editar.');
+            return;
         }
 
-        setFeedbackMessage('Estado del pedido actualizado correctamente');
-        setTimeout(() => setFeedbackMessage(null), 3000);
-        // Recargar la lista de productos después de una actualización exitosa
-        fetchProducts();
-    } catch (error) {
-        console.error('Error al actualizar el estado del pedido:', error);
-        setFeedbackMessage('Error al actualizar el estado del pedido');
-        setTimeout(() => setFeedbackMessage(null), 3000);
-    }
-};
+        const updatedProducts = [...products];
+        updatedProducts[globalIndex][field] = value;
+        setProducts(updatedProducts);
+
+        try {
+            const response = await fetch('http://localhost:8080/api/adquisitions/status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    order_id: updatedProducts[globalIndex].order_id,
+                    new_status: value
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al actualizar el estado en el servidor');
+            }
+
+            setFeedbackMessage('Estado del pedido actualizado correctamente');
+            setTimeout(() => setFeedbackMessage(null), 3000);
+            fetchProducts();
+        } catch (error) {
+            console.error('Error al actualizar el estado del pedido:', error);
+            setFeedbackMessage('Error al actualizar el estado del pedido');
+            setTimeout(() => setFeedbackMessage(null), 3000);
+        }
+    };
 
     const eliminarProducto = async () => {
         if (!productoAEliminar) return;
@@ -133,7 +141,7 @@ function Adquisicion() {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentItems.map((product, index) => (
+                            {currentItems.map((product) => ( // Eliminamos 'index' aquí
                                 <tr key={product.ac_id}>
                                     <td>{product.ac_id}</td>
                                     <td>{product.order_id}</td>
@@ -143,7 +151,7 @@ function Adquisicion() {
                                     <td>
                                         <select
                                             value={product.status}
-                                            onChange={(e) => handleEdit(index, 'status', e.target.value)}>
+                                            onChange={(e) => handleEdit(product, 'status', e.target.value)}> {/* Pasamos el objeto 'product' completo */}
                                             {statusOptions.map((option) => (
                                                 <option key={option} value={option}>
                                                     {option}
