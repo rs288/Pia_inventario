@@ -78,7 +78,7 @@ function Venta() {
         <div>
             <div className="header-container">
                 <h2 style={{ display: 'inline', marginRight: '16em' }}>Lista de Productos Vendido</h2>
-                <Link to="/adquisiciones/nuevo">
+                <Link to="/ventas/nuevo">
                     <button className="nuevo"><i className="fa-solid fa-plus"></i> Nuevo Producto vendido</button>
                 </Link>
             </div>

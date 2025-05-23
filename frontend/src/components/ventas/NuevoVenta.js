@@ -213,7 +213,7 @@ const EditableTableWithAutocomplete = ({ initialData = [], apiUrl = 'http://loca
 
   return (
     <div>
-      <h2>Lista de productos por adquirir</h2>
+      <h2>Lista de productos por vender</h2>
           <div className="botones-container">
               <button className="nuevo espacio-derecha" onClick={agregarFila}>Agregar Fila</button>
               <button className="nuevo" onClick={handleGuardar}>Guardar</button> 
